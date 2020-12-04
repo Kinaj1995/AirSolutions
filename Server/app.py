@@ -15,11 +15,11 @@ def index():
 
 @app.route('/sensors', methods=['GET'])
 def sensors():
-    return render_template('index.html')
+    return render_template('sensors.html')
 
 @app.route('/admin', methods=['GET'])
 def admin():
-    return render_template('index.html')
+    return render_template('admin.html')
 
 
 
