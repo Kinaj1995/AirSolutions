@@ -1,0 +1,22 @@
+### Sensor Save data
+POST http://localhost:5001/sensors/api/savedata HTTP/1.1
+content-type: application/json
+
+{
+            "sensor_id": "12345",
+            "sensor_secret": "PW12345",
+            "co2": "400ppm",
+            "temp": 26.937,
+            "hum": 40,
+            "timestamp": "27.06.2020 00:00:03"
+}
+
+
+
+### Get Sensor Data
+GET http://localhost:5001/sensors/api/getsendata
+    ?id=12345
+
+
+### Get All Data
+GET http://localhost:5001/sensors/api/all
