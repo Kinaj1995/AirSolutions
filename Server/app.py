@@ -31,17 +31,17 @@ sensordata = []
 # ------------Webinterface--------------------
 
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET']) #Handels request for www.air-solutions.ch/
 def index():
-    return render_template('index.html')
+    return render_template('index.html') #Opens template file and sends it to the user
 
 
-@app.route('/sensors', methods=['GET'])
+@app.route('/sensors', methods=['GET']) #Handels request for www.air-solutions.ch/sensors
 def sensors():
     return render_template('sensors.html')
 
 
-@app.route('/admin', methods=['GET'])
+@app.route('/admin', methods=['GET']) #Handels request for www.air-solutions.ch/admin
 def admin():
     return render_template('admin.html')
 

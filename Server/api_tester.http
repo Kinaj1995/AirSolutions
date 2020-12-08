@@ -1,5 +1,5 @@
 ### Sensor Save data
-POST http://localhost:5001/sensors/api/savedata HTTP/1.1
+POST http://localhost:5000/sensors/api/savedata HTTP/1.1
 content-type: application/json
 
 {
@@ -14,9 +14,9 @@ content-type: application/json
 
 
 ### Get Sensor Data
-GET http://localhost:5001/sensors/api/getsendata
+GET http://localhost:5000/sensors/api/getsendata
     ?id=12345
 
 
 ### Get All Data
-GET http://localhost:5001/sensors/api/all
+GET http://localhost:5000/sensors/api/all
