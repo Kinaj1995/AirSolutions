@@ -11,12 +11,5 @@ content-type: application/json
             "timestamp": "27.06.2020 00:00:03"
 }
 
-
-
-### Get Sensor Data
-GET http://localhost:5000/sensors/api/getsendata
-    ?id=12345
-
-
 ### Get All Data
 GET http://localhost:5000/sensors/api/all

@@ -134,6 +134,8 @@ def api_all():
 
     for x in sensordata:
         outjson.append(x.co2)
+        
+        
 
     return jsonify(outjson)  # Returns all sensordate, (just for debug!)
 

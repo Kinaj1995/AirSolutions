@@ -54,3 +54,17 @@ sensor = dbSensors(sensorid='String 10', sensorsecret='String 10', lastseen='Erf
 db.session.add(sensor)
 db.session.commit()
 ```
+
+### Read Data
+
+```python
+from app import db
+from app import dbSenData
+
+sendata = dbSenData.query.all()
+
+print(sendata[0].sensorid)
+print(sendata[0].co2)
+
+```
+
