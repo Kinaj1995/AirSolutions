@@ -1,92 +1,144 @@
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, redirect, jsonify, url_for
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, current_user, login_user, login_required, logout_user
 
+from werkzeug.security import generate_password_hash, check_password_hash
 
 import time
 import json
 
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/db.db'
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-sensorlist = [
-    {'id': 0,
-     'sensor-id': '12345',
-     'sensor-secret': 'PW12345',
-     'last-seen': ''
-     },
-    {'id': 1,
-     'sensor-id': 'TEKO_LU_5.5',
-     'sensor-secret': 'PW12345',
-     'last-seen': ''
-     },
-    {'id': 2,
-     'sensor-id': 'TEKO_BE_2.5',
-     'sensor-secret': 'PW12345',
-     'last-seen': ''
-     },
-]
 
 sensordata = []
 
+# ------------DB Models-----------------------
+db = SQLAlchemy(app)
+
+
+class dbUsers(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), nullable=False, unique=True)
+    password = db.Column(db.Text, nullable=False)
+
+
+class dbSensors(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sensorid = db.Column(db.String(10), nullable=False)
+    sensorsecret = db.Column(db.String(10), nullable=False)
+    lastseen = db.Column(db.String(20))
+
+
+class dbSenData(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sensorid = db.Column(db.String(10), nullable=False)
+    co2 = db.Column(db.Integer)
+    temp = db.Column(db.Integer)
+    hum = db.Column(db.Integer)
+    timestamp = db.Column(db.String(20), nullable=False)
+
+
+# ------------Login---------------------------
+login_manager = LoginManager()
+login_manager.login_view = '/'
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return dbUsers.query.get(int(user_id))
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
+    username = request.form['user']
+    password = request.form['password']
+
+    user = dbUsers.query.filter_by(username=username).first()
+
+    if(user and check_password_hash(user.password, password)):
+        login_user(user)
+        return redirect(url_for('index'))
+    else:
+        #error = "Please check your login details and try again"
+        return redirect(url_for('index'))
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect("/")
+
+
 # ------------Webinterface--------------------
 
-
-@app.route('/', methods=['GET']) #Handels request for www.air-solutions.ch/
+@app.route('/', methods=['GET'])  # Handels request for www.air-solutions.ch/
 def index():
-    return render_template('index.html') #Opens template file and sends it to the user
+    # Opens template file and sends it to the user
+    return render_template('index.html')
 
 
-@app.route('/sensors', methods=['GET']) #Handels request for www.air-solutions.ch/sensors
+# Handels request for www.air-solutions.ch/sensors
+@app.route('/sensors', methods=['GET'])
 def sensors():
     return render_template('sensors.html')
 
 
-@app.route('/admin', methods=['GET']) #Handels request for www.air-solutions.ch/admin
+# Handels request for www.air-solutions.ch/admin
+@app.route('/admin', methods=['GET'])
 def admin():
     return render_template('admin.html')
 
 # ------------Sensor-API----------------------
 
 
-@app.route('/sensors/api/getsendata', methods=['GET'])
-def api_sensor_data():
-
-    if('id' in request.args):           # Checks if a ID parameter is provided
-        id = request.args['id']
-    else:                               # If no ID is given, it returns an Error
-        return "Error: No id was found. Please specify an id."
-
-    sendata = []                        # Empty array for the result data
-
-    for sen in sensorlist:              # Searches thru the sensor list
-        if(sen['sensor-id']==id):
-            sendata.append(sen)
-
-    return jsonify(sendata)
-
-
 @app.route('/sensors/api/savedata', methods=['POST'])
 def api_savedata():
-    data = request.json                 #Gets the data from the POST request
+    data = request.json  # Gets the data from the POST request
 
-    sen_id = data['sensor_id']          #Reads the sensor-ID from the request
-    sen_secret = data['sensor_secret']  #Reads the sensor-secret from the request
+    sen_id = data['sensor_id']  # Reads the sensor-ID from the request
+    # Reads the sensor-secret from the request
+    sen_secret = data['sensor_secret']
 
-    for sen in sensorlist:
-        if(sen['sensor-id']==sen_id and sen['sensor-secret']==sen_secret): #When the sensor-id and the secret matches
-            sensordata.append(data)                                        #It stores the values in the DB
-            sen['last-seen'] = time.strftime("%H:%M:%S %d.%m.%Y")          #And updates the last-seen value in the playerlist
-            return "<p>Values Saved</p>", 200                              #This returns a http 200 
-        else:
-            return "Error: No matching sensor or wrong secret"
+    sensorlist = dbSensors.query.all()
 
-    
+    for x in sensorlist:
+        # When the sensor-id and the secret matches
+        if(x.sensorid == sen_id and x.sensorsecret == sen_secret):
+
+            # It greates an object wich gets sends to the DB
+            sensordata = dbSenData(sensorid=data['sensor_id'], co2=data['co2'],
+                                   temp=data['temp'], hum=data['hum'], timestamp=data['timestamp'])
+            # Sends Obj to the DB
+            db.session.add(sensordata)
+            # Saves changes to DB
+            db.session.commit()
+
+            return "<p>Values Saved</p>", 200  # This returns a http 200
+
+    return "Error: No matching sensor or wrong secret"
+
 
 @app.route('/sensors/api/all', methods=['get'])
 def api_all():
-    return jsonify(sensordata) # Returns all sensordate, (just for debug!)
+
+    sensordata = dbSenData.query.all()
+    outjson = []
+
+    for x in sensordata:
+        outjson.append(x.co2)
+
+    return jsonify(outjson)  # Returns all sensordate, (just for debug!)
 
 # ------------Error Handling------------------
+
 
 @app.errorhandler(404)
 def page_not_found(e):
