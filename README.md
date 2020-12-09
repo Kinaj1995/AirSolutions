@@ -36,8 +36,19 @@ Username:   admin
 Password:   12345
 
 ## Requirements
-```.txt
-flask==1.0
+Intall needed Python libarys
+```bash
+pip3 install -r requirements.txt
+```
+
+Requirements (contained in requirements.txt)
+```requirements.txt
+Flask==1.1.2
+Flask-Login==0.5.0
+Flask-SQLAlchemy==2.4.4
+Jinja2==2.10.1
+SQLAlchemy==1.3.19
+Werkzeug==1.0.1
 ```
 
 ## DB
