@@ -6,6 +6,20 @@
 Programmiert in: 	Visual Studio Code
 Extension:			PlattformIO
 
+## Sendata 
+Endpoint:   "yoururl"/sensors/api/savedata
+
+Method:     POST
+```json
+{
+    "sensor_id": "TEKO_BE_2.5",
+    "sensor_secret": "PW12345",
+    "co2": "400ppm",
+    "temp": 26.937,
+    "hum": 40,
+    "timestamp": "27.06.2020 00:00:03"
+}
+```
 
 
 
@@ -13,7 +27,13 @@ Extension:			PlattformIO
 # Server
 
 Programmiert in: 	Visual Studio Code
+
 Extension:			Python, REST Client
+
+## Testuser
+Username:   admin
+
+Password:   12345
 
 ## Requirements
 ```.txt

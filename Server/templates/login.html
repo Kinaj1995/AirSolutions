@@ -1,0 +1,21 @@
+{% extends 'base.html' %} {% block head %}
+
+{% endblock %} {% block body %} 
+
+{% if error %}
+<div class="alert alert-danger" role="alert">{{ error }}</div>
+{% endif %}
+
+<form method="POST" action="/login">
+    <div class="form-group">
+        <input type="text" class="form-control" name="user" id="user" placeholder="username">
+</div>
+    <div class="form-group">
+        <input type="password" class="form-control" name="password" id="password" placeholder="password">
+</div>
+    <input type="submit" class="btn btn-primary" value="Login">
+</form>
+
+
+
+{% endblock %}

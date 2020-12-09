@@ -1,14 +1,27 @@
-
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 
 {% block head %}
 
 
-{% endblock %} 
+{% endblock %}
 
 
 
 {% block body %}
-
+<table style="width:100%">
+    <tr>
+        <th>Sensor ID</th>
+        <th>Sensor Secret</th>
+        <th>Last Seen</th>
+    </tr>
+    
+    {% for x in sensors %}
+    <tr>
+        <td>{{ x.sensorid }}</td>
+        <td>{{ x.sensorsecret }}</td>
+        <td>{{ x.lastseen }}</td>
+    </tr>
+    {% endfor %}
+</table>
 
 {% endblock %}

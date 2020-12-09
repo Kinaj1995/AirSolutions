@@ -53,22 +53,25 @@ def load_user(user_id):
     return dbUsers.query.get(int(user_id))
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET','POST'])
 def login():
-    if current_user.is_authenticated:
+    if(current_user.is_authenticated):
         return redirect(url_for('index'))
 
-    username = request.form['user']
-    password = request.form['password']
+    if(request.method == 'POST'):
+        username = request.form['user']
+        password = request.form['password']
 
-    user = dbUsers.query.filter_by(username=username).first()
+        user = dbUsers.query.filter_by(username=username).first()
 
-    if(user and check_password_hash(user.password, password)):
-        login_user(user)
-        return redirect(url_for('index'))
+        if(user and check_password_hash(user.password, password)):
+            login_user(user)
+            return redirect(url_for('index'))
+        else:
+            error = "Bitte überprüfe deine Logininformationen und probiere es nochmals"
+            return render_template('login.html', error=error)
     else:
-        #error = "Please check your login details and try again"
-        return redirect(url_for('index'))
+        return render_template('login.html')
 
 
 @app.route('/logout')
@@ -87,12 +90,14 @@ def index():
 
 # Handels request for www.air-solutions.ch/sensors
 @app.route('/sensors', methods=['GET'])
+#@login_required
 def sensors():
-    return render_template('sensors.html')
+    return render_template('sensors.html', sensors=dbSensors.query.all())
 
 
 # Handels request for www.air-solutions.ch/admin
 @app.route('/admin', methods=['GET'])
+#@login_required
 def admin():
     return render_template('admin.html')
 
@@ -118,6 +123,7 @@ def api_savedata():
                                    temp=data['temp'], hum=data['hum'], timestamp=data['timestamp'])
             # Sends Obj to the DB
             db.session.add(sensordata)
+            x.lastseen = time.strftime('%H:%M:%S %d.%m.%Y')
             # Saves changes to DB
             db.session.commit()
 
@@ -140,8 +146,6 @@ def api_all():
     return jsonify(outjson)  # Returns all sensordate, (just for debug!)
 
 # ------------Error Handling------------------
-
-
 @app.errorhandler(404)
 def page_not_found(e):
     return "<h1>404</h1><p>The resource could not be found.</p>", 404

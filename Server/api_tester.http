@@ -5,7 +5,7 @@ content-type: application/json
 {
             "sensor_id": "TEKO_BE_2.5",
             "sensor_secret": "PW12345",
-            "co2": "400ppm",
+            "co2": "401ppm",
             "temp": 26.937,
             "hum": 40,
             "timestamp": "27.06.2020 00:00:03"
