@@ -31,8 +31,8 @@ class dbSensors(db.Model):
     sensorid = db.Column(db.String(10), nullable=False)
     sensorsecret = db.Column(db.String(10), nullable=False)
     lastseen = db.Column(db.String(20))
-    location = db.Column(db.String(50))
-    description = db.Column(db.Text)
+    #location = db.Column(db.String(50))
+    #description = db.Column(db.Text)
 
 
 class dbSenData(db.Model):
