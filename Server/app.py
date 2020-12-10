@@ -31,6 +31,8 @@ class dbSensors(db.Model):
     sensorid = db.Column(db.String(10), nullable=False)
     sensorsecret = db.Column(db.String(10), nullable=False)
     lastseen = db.Column(db.String(20))
+    location = db.Column(db.String(50))
+    description = db.Column(db.Text)
 
 
 class dbSenData(db.Model):
@@ -85,7 +87,7 @@ def logout():
 @app.route('/', methods=['GET'])  # Handels request for www.air-solutions.ch/
 def index():
     # Opens template file and sends it to the user
-    return render_template('index.html')
+    return render_template('index.html', daten=dbSenData.query.all())
 
 
 # Handels request for www.air-solutions.ch/sensors
