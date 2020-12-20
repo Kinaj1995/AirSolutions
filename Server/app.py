@@ -95,13 +95,13 @@ def index():
 
     if(currentsensor):  # Checks if the var is empty
         daten = dbSenData.query.filter_by(sensorid=currentsensor).order_by(dbSenData.timestamp.desc()) # Selects just the wanted Sensordata
-        chartdata = dbSenData.query.filter_by(sensorid=currentsensor).with_entities(dbSenData.sensorid, dbSenData.hum, dbSenData.timestamp).order_by(dbSenData.timestamp.desc()).limit(20)
-    
+            
     else:   #When the var is empty
+        currentsensor = False
         daten = dbSenData.query.order_by(dbSenData.timestamp.desc()).limit(50) # Selects the last 50 datapoints
-        chartdata = dbSenData.query.with_entities(dbSenData.sensorid, dbSenData.hum, dbSenData.timestamp).order_by(dbSenData.timestamp.desc()).limit(50)
+        
 
-    return render_template('index.html', daten=daten, chartdata=chartdata, sensors=dbSensors.query.all())
+    return render_template('index.html', daten=daten, chartdata=daten.limit(30), sensors=dbSensors.query.all(), currentsensor=currentsensor)
 
 
 

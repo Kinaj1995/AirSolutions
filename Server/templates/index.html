@@ -39,7 +39,7 @@
           <ul class="nav flex-column">
             <li class="nav-item">
               <a class="nav-link" href="/">
-                <span data-feather="wind"></span>
+                
                 Alle Sensoren
               </a>
             </li>
@@ -58,7 +58,7 @@
   
       <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">Diagramm</h1>
+          <h1 class="h2">{% if currentsensor %}Diagramm{% endif %}</h1>
           <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
               <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
@@ -69,8 +69,10 @@
             </button>
           </div>
         </div>
-  
+        
+        {% if currentsensor %}
         <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+        {% endif %}
   
         <h2>Messungen</h2>
         <div class="table-responsive">
@@ -90,9 +92,9 @@
               <tr>
                 <td>{{ x.timestamp }}</td>
                 <td>{{ x.sensorid }}</td>
-                <td>{{ x.co2}}</td>
-                <td>{{ x.hum }}</td>
-                <td>{{ x.temp }}</td>
+                <td>{{ x.co2}} ppm</td>
+                <td>{{ x.hum }} %</td>
+                <td>{{ x.temp }} °C</td>
                 
               </tr>  
               {% endfor %}                         
@@ -121,25 +123,57 @@
         var myChart = new Chart(ctx, {
           type: 'line',
           data: {
+            
             labels: [
               {% for x in chartdata %}
                 "{{ x.timestamp }}",
               {% endfor %}
             ],
             datasets: [{
-              data: [
-              {% for x in chartdata %}
-                "{{ x.hum }}",
-              {% endfor %}
-              ],
-              lineTension: 0,
+              label: 'Luftfeuchtigkeit',
+              fill: false,
               backgroundColor: 'transparent',
               borderColor: '#019dad',
               borderWidth: 4,
-              pointBackgroundColor: '#019dad'
-            }]
+              pointBackgroundColor: '#019dad',
+              data: [
+                {% for x in chartdata %}
+                  "{{ x.hum }}",
+                {% endfor %}      
+              ]
+            }, {
+              label: 'Temperatur',
+              fill: false,
+              backgroundColor: 'transparent',
+              borderColor: '#FF2D00',
+              borderWidth: 4,
+              pointBackgroundColor: '#FF2D00',
+              data: [
+                {% for x in chartdata %}
+                  "{{ x.temp }}",
+                {% endfor %}      
+              ]
+            }, {
+              label: 'CO2',
+              fill: false,
+              backgroundColor: 'transparent',
+              borderColor: '#000000',
+              borderWidth: 4,
+              pointBackgroundColor: '#000000',
+              data: [
+                {% for x in chartdata %}
+                  "{{ x.co2 }}",
+                {% endfor %}      
+              ]
+            },
+
+
+            
+            
+          ]
           },
           options: {
+            
             scales: {
               yAxes: [{
                 ticks: {
@@ -148,7 +182,7 @@
               }]
             },
             legend: {
-              display: false
+              display: true
             }
           }
         })
