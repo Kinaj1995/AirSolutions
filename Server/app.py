@@ -1,12 +1,15 @@
 
 from flask import Flask, render_template, request, redirect, jsonify, url_for
 from flask_sqlalchemy import SQLAlchemy
+
 from flask_login import LoginManager, UserMixin, current_user, login_user, login_required, logout_user
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import time
 import json
+
+from markupsafe import escape
 
 
 app = Flask(__name__)
@@ -87,7 +90,20 @@ def logout():
 @app.route('/', methods=['GET'])  # Handels request for www.air-solutions.ch/
 def index():
     # Opens template file and sends it to the user
-    return render_template('index.html', daten=dbSenData.query.all())
+
+    currentsensor = request.args.get('currentsensor') # Gets the selected sensor from the URL
+
+    if(currentsensor):  # Checks if the var is empty
+        daten = dbSenData.query.filter_by(sensorid=currentsensor).order_by(dbSenData.timestamp.desc()) # Selects just the wanted Sensordata
+    
+    else:   #When the var is empty
+        daten = dbSenData.query.order_by(dbSenData.timestamp.desc()).limit(50) # Selects the last 50 datapoints
+
+    return render_template('index.html', daten=daten, sensors=dbSensors.query.all())
+
+
+
+    
 
 
 # Handels request for www.air-solutions.ch/sensors

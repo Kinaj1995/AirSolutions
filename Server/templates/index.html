@@ -35,43 +35,23 @@
     <div class="row">
       <nav class="col-md-2 d-none d-md-block bg-light sidebar">
         <div class="sidebar-sticky">
+          <br>
           <ul class="nav flex-column">
             <li class="nav-item">
-              <a class="nav-link active" href="#">
-                <span data-feather="home"></span>
-                Sensor 1 <span class="sr-only">(current)</span>
+              <a class="nav-link" href="/">
+                <span data-feather="wind"></span>
+                Alle Sensoren
               </a>
             </li>
+            {% for x in sensors %}
             <li class="nav-item">
-              <a class="nav-link" href="#">
-                <span data-feather="file"></span>
-                Sensor 2
+              <a class="nav-link" href="/?currentsensor={{x.sensorid}}">
+                <span data-feather="wind"></span>
+                {{x.sensorid}}
               </a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">
-                <span data-feather="shopping-cart"></span>
-                Sensor 3
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">
-                <span data-feather="users"></span>
-                Sensor 4
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">
-                <span data-feather="bar-chart-2"></span>
-                Sensor 5
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">
-                <span data-feather="layers"></span>
-                Sensor 6
-              </a>
-            </li>
+            {% endfor %}     
+               
           </ul>         
         </div>
       </nav>
@@ -98,22 +78,24 @@
             <thead>
               <tr>
                 <th>Zeitpunkt der Messung</th>
-                <th>VOC-Wert</th>
+                <th>Sensor-ID</th>
                 <th>CO2-Wert</th>
-                <th>Sauerstoffanteil</th>
-                <th>Luftqualität</th>
+                <th>Luftfeuchtigkeit</th>
+                <th>Temperatur</th>
+                
               </tr>
             </thead>
             <tbody>
               {% for x in daten %}
               <tr>
                 <td>{{ x.timestamp }}</td>
-                <td>{{ x.hum }}</td>
+                <td>{{ x.sensorid }}</td>
                 <td>{{ x.co2}}</td>
+                <td>{{ x.hum }}</td>
                 <td>{{ x.temp }}</td>
-                <td>Gute Luftqualität</td>
+                
               </tr>  
-              {% endfor%}                         
+              {% endfor %}                         
             </tbody>
           </table>
         </div>
