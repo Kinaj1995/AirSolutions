@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import time
 import json
 
-from markupsafe import escape
+
 
 
 app = Flask(__name__)
@@ -34,8 +34,8 @@ class dbSensors(db.Model):
     sensorid = db.Column(db.String(10), nullable=False)
     sensorsecret = db.Column(db.String(10), nullable=False)
     lastseen = db.Column(db.String(20))
-    #location = db.Column(db.String(50))
-    #description = db.Column(db.Text)
+    location = db.Column(db.String(50))
+    description = db.Column(db.Text)
 
 
 class dbSenData(db.Model):
@@ -164,6 +164,42 @@ def api_all():
         
 
     return jsonify(outjson)  # Returns all sensordate, (just for debug!)
+
+@app.route('/sensors/api/addsensor', methods=['POST'])
+#@login_required
+def addSensor():
+    data = request.form # Gets the data from the POST request
+
+
+    sen_id = data['sensor_id']
+    sen_secret = data['sensor_secret']
+    sen_location = data['location']
+    sen_description = data['description']
+
+    savetime = "Erfasst: " + time.strftime('%H:%M %d.%m.%Y')
+
+    sensor = dbSensors(sensorid=sen_id, sensorsecret=sen_secret, lastseen=savetime, location=sen_location, description=sen_description)
+
+    db.session.add(sensor)
+    db.session.commit()
+
+    return redirect(url_for('sensors'))
+
+
+@app.route('/sensors/api/delsensor', methods=['POST'])
+#@login_required
+def delSensor():
+    data = request.form         # Gets the data from the POST request
+    sen_id = data['sensor_id_hidden']  # Reads the SensorID from the Post request
+
+    print(sen_id)
+
+    dbSenData.query.filter_by(sensorid=sen_id).delete() # Delets all data from the table where the SensorID is used 
+    dbSensors.query.filter_by(sensorid=sen_id).delete() # Delets the Senor from the Sensor table in the DB
+    db.session.commit()                                 # Commits the changes to the DB
+
+    return redirect(url_for('sensors'))
+
 
 # ------------Error Handling------------------
 @app.errorhandler(404)
