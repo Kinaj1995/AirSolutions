@@ -1,5 +1,4 @@
-
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 
 {% block head %}
 
@@ -23,147 +22,164 @@
   }
 </style>
 
-{% endblock %} 
+{% endblock %}
 
 
 
 {% block body %}
 
 <!--Kommentar-->
-  
-  <div class="container-fluid">
-    <div class="row">
-      <nav class="col-md-2 d-none d-md-block bg-light sidebar">
-        <div class="sidebar-sticky">
-          <br>
-          <ul class="nav flex-column">
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                
-                Alle Sensoren
-              </a>
-            </li>
-            {% for x in sensors %}
-            <li class="nav-item">
-              <a class="nav-link" href="/?currentsensor={{x.sensorid}}">
-                <span data-feather="wind"></span>
-                {{x.sensorid}}
-              </a>
-            </li>
-            {% endfor %}     
-               
-          </ul>         
-        </div>
-      </nav>
-  
-      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">{% if currentsensor %}Messwerte{% endif %}</h1>
-          <div class="btn-toolbar mb-2 mb-md-0">
-            <div class="btn-group mr-2">
-              <button type="button" class="btn btn-outline-secondary">Export</button>
-            </div>
-            <button type="button" class="btn btn-outline-secondary dropdown-toggle">
-              <span data-feather="calendar"></span>
-              This week
-            </button>
+
+<div class="container-fluid">
+  <div class="row">
+    <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+      <div class="sidebar-sticky">
+        <br>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+
+              Alle Sensoren
+            </a>
+          </li>
+          {% for x in sensors %}
+          <li class="nav-item">
+            <a class="nav-link" href="/?currentsensor={{x.sensorid}}">
+              <span data-feather="wind"></span>
+              {{x.sensorid}}
+            </a>
+          </li>
+          {% endfor %}
+
+        </ul>
+      </div>
+    </nav>
+
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+      <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">{% if showchart %}Messwerte{% endif %}</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group mr-2">
+            <button type="button" class="btn btn-outline-secondary">Exportieren</button>
+          </div>
+          <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            <span data-feather="calendar"></span>
+            Datums Filter
+          </button>
+          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+            <form method="GET">
+              <div class="form-group">
+                <input type="date" class="form-control" name="startdate" id="startdate">
+              </div>
+              <div class="form-group">
+                <input type="date" class="form-control" name="enddate" id="enddate">
+              </div>
+              <input type="hidden" name="currentsensor" id="currentsensor" value="{{ request.args.get('currentsensor') }}">
+              <input type="submit" class="btn btn-primary" value="Filter anwenden">
+              
+            </form>
+
+            </form>
           </div>
         </div>
-        
-        {% if currentsensor %}
-        <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
-        {% endif %}
-  
-        <h2>Messungen</h2>
-        <div class="table-responsive">
-          <table class="table table-striped table-sm">
-            <thead>
-              <tr>
-                <th>Zeitpunkt der Messung</th>
-                <th>Sensor-ID</th>
-                <th>CO2-Wert</th>
-                <th>Luftfeuchtigkeit</th>
-                <th>Temperatur</th>
-                
-              </tr>
-            </thead>
-            <tbody>
-              {% for x in daten %}
-              <tr>
-                <td>{{ x.timestamp }}</td>
-                <td>{{ x.sensorid }}</td>
-                <td>{{ x.co2}} ppm</td>
-                <td>{{ x.hum }} %</td>
-                <td>{{ x.temp }} °C</td>
-                
-              </tr>  
-              {% endfor %}                         
-            </tbody>
-          </table>
-        </div>
-      </main>
-    </div>
+      </div>
+
+      {% if showchart == True %}
+      <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+      {% endif %}
+
+      <h2>Messungen</h2>
+      <div class="table-responsive">
+        <table class="table table-striped table-sm">
+          <thead>
+            <tr>
+              <th>Zeitpunkt der Messung</th>
+              <th>Sensor-ID</th>
+              <th>CO2-Wert</th>
+              <th>Luftfeuchtigkeit</th>
+              <th>Temperatur</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            {% for x in daten %}
+            <tr>
+              <td>{{ x.timestamp }}</td>
+              <td>{{ x.sensorid }}</td>
+              <td>{{ x.co2}} ppm</td>
+              <td>{{ x.hum }} %</td>
+              <td>{{ x.temp }} °C</td>
+
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </main>
   </div>
+</div>
 
-  
-  <script src="{{url_for('static', filename='Chart.min.js')}}"></script>
-  
 
-  <script>
-    /* globals Chart:false, feather:false */
+<script src="{{url_for('static', filename='Chart.min.js')}}"></script>
 
-    (function () {
-        'use strict'
-      
-        feather.replace()
-      
-        // Graphs
-        var ctx = document.getElementById('myChart')
-        // eslint-disable-next-line no-unused-vars
-        var myChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            
-            labels: [
-              {% for x in chartdata %}
+
+<script>
+  /* globals Chart:false, feather:false */
+
+  (function () {
+    'use strict'
+
+    feather.replace()
+
+    // Graphs
+    var ctx = document.getElementById('myChart')
+    // eslint-disable-next-line no-unused-vars
+    var myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+
+        labels: [
+          {% for x in chartdata %}
                 "{{ x.timestamp }}",
               {% endfor %}
             ],
-            datasets: [{
-              label: 'Luftfeuchtigkeit',
-              fill: false,
-              backgroundColor: 'transparent',
-              borderColor: '#019dad',
-              borderWidth: 4,
-              pointBackgroundColor: '#019dad',
-              data: [
-                {% for x in chartdata %}
+  datasets: [{
+    label: 'Luftfeuchtigkeit',
+    fill: false,
+    backgroundColor: 'transparent',
+    borderColor: '#019dad',
+    borderWidth: 4,
+    pointBackgroundColor: '#019dad',
+    data: [
+      {% for x in chartdata %}
                   "{{ x.hum }}",
-                {% endfor %}      
-              ]
+  {% endfor %}
+  ]
             }, {
-              label: 'Temperatur',
-              fill: false,
-              backgroundColor: 'transparent',
-              borderColor: '#FF2D00',
-              borderWidth: 4,
+    label: 'Temperatur',
+      fill: false,
+        backgroundColor: 'transparent',
+          borderColor: '#FF2D00',
+            borderWidth: 4,
               pointBackgroundColor: '#FF2D00',
-              data: [
-                {% for x in chartdata %}
-                  "{{ x.temp }}",
-                {% endfor %}      
+                data: [
+                  {% for x in chartdata %}
+  "{{ x.temp }}",
+    {% endfor %}      
               ]
             }, {
-              label: 'CO2',
-              fill: false,
-              backgroundColor: 'transparent',
-              borderColor: '#000000',
-              borderWidth: 4,
+    label: 'CO2',
+      fill: false,
+        backgroundColor: 'transparent',
+          borderColor: '#000000',
+            borderWidth: 4,
               pointBackgroundColor: '#000000',
-              data: [
-                {% for x in chartdata %}
-                  "{{ x.co2 }}",
-                {% endfor %}      
+                data: [
+                  {% for x in chartdata %}
+  "{{ x.co2 }}",
+    {% endfor %}      
               ]
             },
 
@@ -172,24 +188,24 @@
             
           ]
           },
-          options: {
-            
-            scales: {
-              yAxes: [{
-                ticks: {
-                  beginAtZero: false
-                }
-              }]
-            },
-            legend: {
-              display: true
-            }
-          }
-        })
-      })()
-      
+  options: {
 
-  </script>
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: false
+        }
+      }]
+    },
+    legend: {
+      display: true
+    }
+  }
+        })
+      }) ()
+
+
+</script>
 
 
 

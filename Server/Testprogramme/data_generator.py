@@ -10,7 +10,7 @@ headers = {
     }
 
 
-data = '{"sensor_id": "1212","sensor_secret": "1212","co2": 401,"temp": 26.937,"hum": 40,"timestamp": "27.06.2020 00:00:03"}'
+data = '{"sensor_id": "TEKO_LU_5.5","sensor_secret": "PW12345","co2": 401,"temp": 26.937,"hum": 40,"timestamp": "27.06.2020 00:00:03"}'
 
 data = json.loads(data)
 

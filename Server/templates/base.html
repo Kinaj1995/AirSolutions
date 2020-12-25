@@ -37,14 +37,14 @@
                 <li class="nav-item {% if url_for(request.endpoint)=='/' %} active {%endif%}">
                     <a class="nav-link" href="/">Daten</a>
                 </li>
-                
+                {% if current_user.is_authenticated %}
                 <li class="nav-item {% if url_for(request.endpoint)=='/sensors' %} active {%endif%}">
                     <a class="nav-link" href="/sensors">Sensoren</a>
                 </li>
                 <li class="nav-item {% if url_for(request.endpoint)=='/admin' %} active {%endif%}">
                     <a class="nav-link" href="/admin">Einstellungen</a>
                 </li>
-                
+                {% endif %}
             </ul>
 
             </ul>

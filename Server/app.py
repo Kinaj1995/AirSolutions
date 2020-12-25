@@ -7,6 +7,7 @@ from flask_login import LoginManager, UserMixin, current_user, login_user, login
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import time
+from datetime import datetime
 import json
 
 
@@ -80,6 +81,7 @@ def login():
 
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect("/")
@@ -92,16 +94,38 @@ def index():
     # Opens template file and sends it to the user
 
     currentsensor = request.args.get('currentsensor') # Gets the selected sensor from the URL
+    startdate = request.args.get('startdate')
+    enddate = request.args.get('enddate')
 
-    if(currentsensor):  # Checks if the var is empty
+    print(enddate)
+
+
+   
+
+    if(currentsensor and (enddate == None or startdate == None)):  # Checks if the var is empty
         daten = dbSenData.query.filter_by(sensorid=currentsensor).order_by(dbSenData.timestamp.desc()) # Selects just the wanted Sensordata
-            
-    else:   #When the var is empty
-        currentsensor = False
-        daten = dbSenData.query.order_by(dbSenData.timestamp.desc()).limit(50) # Selects the last 50 datapoints
-        
+        chartdata = daten.limit(30)
+        showchart = True
 
-    return render_template('index.html', daten=daten, chartdata=daten.limit(30), sensors=dbSensors.query.all(), currentsensor=currentsensor)
+    elif(currentsensor and startdate and enddate):
+        startdate = datetime.strptime(startdate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M')
+        enddate = datetime.strptime(enddate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M')
+        """ For Debug
+        print(currentsensor)
+        print("Startdate: " + startdate)
+        print("Enddate: " + enddate)
+        """
+        
+        daten = dbSenData.query.filter_by(sensorid = currentsensor).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate).order_by(dbSenData.timestamp.desc())
+        chartdata = dbSenData.query.filter_by(sensorid = currentsensor).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate)
+        showchart = True
+
+    else:   #When the var is empty
+        daten = dbSenData.query.order_by(dbSenData.timestamp.desc()).limit(50)# Selects the last 50 datapoints
+        chartdata = daten
+        showchart = False
+
+    return render_template('index.html', daten=daten, chartdata=chartdata, sensors=dbSensors.query.all(), showchart=showchart)
 
 
 
@@ -110,14 +134,14 @@ def index():
 
 # Handels request for www.air-solutions.ch/sensors
 @app.route('/sensors', methods=['GET'])
-#@login_required
+@login_required
 def sensors():
     return render_template('sensors.html', sensors=dbSensors.query.all())
 
 
 # Handels request for www.air-solutions.ch/admin
 @app.route('/admin', methods=['GET'])
-#@login_required
+@login_required
 def admin():
     return render_template('admin.html')
 
@@ -166,7 +190,7 @@ def api_all():
     return jsonify(outjson)  # Returns all sensordate, (just for debug!)
 
 @app.route('/sensors/api/addsensor', methods=['POST'])
-#@login_required
+@login_required
 def addSensor():
     data = request.form # Gets the data from the POST request
 
@@ -187,7 +211,7 @@ def addSensor():
 
 
 @app.route('/sensors/api/delsensor', methods=['POST'])
-#@login_required
+@login_required
 def delSensor():
     data = request.form         # Gets the data from the POST request
     sen_id = data['sensor_id_hidden']  # Reads the SensorID from the Post request
