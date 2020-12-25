@@ -107,7 +107,7 @@ def index():
         chartdata = daten.limit(30)
         showchart = True
 
-    elif(currentsensor and startdate and enddate):
+    elif(currentsensor and startdate  and enddate ):
         startdate = datetime.strptime(startdate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M')
         enddate = datetime.strptime(enddate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M')
         """ For Debug
@@ -175,19 +175,34 @@ def api_savedata():
 
     return "Error: No matching sensor or wrong secret"
 
+@app.route('/sensors/api/exportdata', methods=['POST'])
+def api_exportdata():
+    data = request.form # Gets the data from the POST request
 
-@app.route('/sensors/api/all', methods=['get'])
-def api_all():
+    sen_id = data['sensor_id']
+    startdate = data['startdate']
+    enddate = data['enddate']
 
-    sensordata = dbSenData.query.all()
-    outjson = []
+    print(enddate)
 
-    for x in sensordata:
-        outjson.append(x.co2)
-        
-        
+    
+    if(sen_id and (enddate == None or startdate == None)):
+        print(sen_id)
 
-    return jsonify(outjson)  # Returns all sensordate, (just for debug!)
+    elif(sen_id and startdate != None and enddate != None):
+        startdate = datetime.strptime(startdate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M')
+        enddate = datetime.strptime(enddate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M')
+
+        print(sen_id)
+        print("Startdate: " + startdate)
+        print("Enddate: " + enddate)
+    
+    else:
+        print("Error")
+
+    return "Not implementet yet!"
+
+
 
 @app.route('/sensors/api/addsensor', methods=['POST'])
 @login_required
@@ -223,6 +238,9 @@ def delSensor():
     db.session.commit()                                 # Commits the changes to the DB
 
     return redirect(url_for('sensors'))
+
+
+
 
 
 # ------------Error Handling------------------

@@ -61,7 +61,13 @@
         <h1 class="h2">{% if showchart %}Messwerte{% endif %}</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group mr-2">
-            <button type="button" class="btn btn-outline-secondary">Exportieren</button>
+            <form method="POST" action="/sensors/api/exportdata">
+              <input type="hidden" name="sensor_id" id="sensor_id" value="{{ request.args.get('currentsensor') }}">
+              <input type="hidden" class="form-control" name="startdate" id="startdate" value="{{ request.args.get('startdate') }}">
+              <input type="hidden" class="form-control" name="enddate" id="enddate" value="{{ request.args.get('enddate') }}">
+
+              <input type="submit" class="btn btn-outline-secondary" value="Exportieren">
+            </form>
           </div>
           <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
@@ -76,9 +82,10 @@
               <div class="form-group">
                 <input type="date" class="form-control" name="enddate" id="enddate">
               </div>
-              <input type="hidden" name="currentsensor" id="currentsensor" value="{{ request.args.get('currentsensor') }}">
+              <input type="hidden" name="currentsensor" id="currentsensor"
+                value="{{ request.args.get('currentsensor') }}">
               <input type="submit" class="btn btn-primary" value="Filter anwenden">
-              
+
             </form>
 
             </form>
