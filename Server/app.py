@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request, redirect, jsonify, url_for
+from flask import Flask, render_template, request, redirect, jsonify, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
 
 from flask_login import LoginManager, UserMixin, current_user, login_user, login_required, logout_user
@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import time
 from datetime import datetime
 import json
-
+import csv
 
 
 
@@ -183,7 +183,7 @@ def api_exportdata():
     startdate = data['startdate']
     enddate = data['enddate']
 
-    print(enddate)
+    
 
     
     if(sen_id and (enddate == None or startdate == None)):
@@ -196,11 +196,25 @@ def api_exportdata():
         print(sen_id)
         print("Startdate: " + startdate)
         print("Enddate: " + enddate)
+
+        exportdata = dbSenData.query.filter_by(sensorid = sen_id).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate)
+
+        with open('./download/_daten.csv', 'w') as f:
+            out = csv.writer(f, delimiter=";")
+            out.writerow(['id', 'co2', 'hum', 'temp'])
+
+            for item in exportdata:
+                out.writerow([item.id, item.co2, item.hum, item.temp])
+
+            f.close
+        
+        return send_file('./download/_daten.csv', mimetype="text/csv", attachment_filename= sen_id + "_daten.csv", as_attachment=True)
+
     
     else:
         print("Error")
 
-    return "Not implementet yet!"
+        return "Ein Fehler ist aufgetreten"
 
 
 
