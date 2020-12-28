@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request, redirect, jsonify, url_for, send_file
+from flask import Flask, render_template, request, redirect, url_for, send_file, flash
 from flask_sqlalchemy import SQLAlchemy
 
 from flask_login import LoginManager, UserMixin, current_user, login_user, login_required, logout_user
@@ -18,7 +18,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/db.db'
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 
-sensordata = []
+# ------------Global Var----------------------
+
 
 # ------------DB Models-----------------------
 db = SQLAlchemy(app)
@@ -100,6 +101,8 @@ def index():
     print(enddate)
 
 
+
+
    
 
     if(currentsensor and (enddate == None or startdate == None)):  # Checks if the var is empty
@@ -125,7 +128,8 @@ def index():
         chartdata = daten
         showchart = False
 
-    return render_template('index.html', daten=daten, chartdata=chartdata, sensors=dbSensors.query.all(), showchart=showchart)
+    error=""
+    return render_template('index.html', daten=daten, chartdata=chartdata, sensors=dbSensors.query.all(), showchart=showchart, error=error)
 
 
 
@@ -183,13 +187,7 @@ def api_exportdata():
     startdate = data['startdate']
     enddate = data['enddate']
 
-    
-
-    
-    if(sen_id and (enddate == None or startdate == None)):
-        print(sen_id)
-
-    elif(sen_id and startdate != None and enddate != None):
+    try:
         startdate = datetime.strptime(startdate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M')
         enddate = datetime.strptime(enddate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M')
 
@@ -201,20 +199,23 @@ def api_exportdata():
 
         with open('./download/_daten.csv', 'w') as f:
             out = csv.writer(f, delimiter=";")
-            out.writerow(['id', 'co2', 'hum', 'temp'])
+            out.writerow(['Messzeitpunkt', 'CO2', 'hum', 'temp'])
 
             for item in exportdata:
-                out.writerow([item.id, item.co2, item.hum, item.temp])
+                out.writerow([item.timestamp, item.co2, item.hum, item.temp])
 
             f.close
         
         return send_file('./download/_daten.csv', mimetype="text/csv", attachment_filename= sen_id + "_daten.csv", as_attachment=True)
 
+    except ValueError:
+        print("No Values given")
+        error = "Bitte wählen Sie einen Sensor und eine Zeitraum aus!"
+        flash(u'Invalid password provided', 'error')
+        return redirect(url_for("index", currentsensor=sen_id))
     
-    else:
-        print("Error")
 
-        return "Ein Fehler ist aufgetreten"
+   
 
 
 

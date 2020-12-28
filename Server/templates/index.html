@@ -28,7 +28,9 @@
 
 {% block body %}
 
-<!--Kommentar-->
+{% if error %}
+<div class="alert alert-danger" role="alert">{{ error }}</div>
+{% endif %}
 
 <div class="container-fluid">
   <div class="row">
@@ -66,7 +68,7 @@
               <input type="hidden" class="form-control" name="startdate" id="startdate" value="{{ request.args.get('startdate') }}">
               <input type="hidden" class="form-control" name="enddate" id="enddate" value="{{ request.args.get('enddate') }}">
 
-              <input type="submit" class="btn btn-outline-secondary" value="Exportieren">
+              {% if showchart %}<input type="submit" class="btn btn-outline-secondary" value="Exportieren">{% endif %}
             </form>
           </div>
           <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown"
