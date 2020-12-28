@@ -1,7 +1,6 @@
 
-from flask import Flask, render_template, request, redirect, url_for, send_file, flash
+from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
-
 from flask_login import LoginManager, UserMixin, current_user, login_user, login_required, logout_user
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -14,7 +13,7 @@ import csv
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/db.db'
+
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 
@@ -22,6 +21,8 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 
 # ------------DB Models-----------------------
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/db.db'    #Testing DB
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/db.db'   #PostgreSQL Server
 db = SQLAlchemy(app)
 
 
@@ -62,68 +63,59 @@ def load_user(user_id):
 
 @app.route('/login', methods=['GET','POST'])
 def login():
+
+    #Checks if User is already loged in
     if(current_user.is_authenticated):
         return redirect(url_for('index'))
 
+    #If the method is POST it checks the Data 
     if(request.method == 'POST'):
         username = request.form['user']
         password = request.form['password']
 
-        user = dbUsers.query.filter_by(username=username).first()
+        user = dbUsers.query.filter_by(username=username).first()   # Searches the user in the Database
 
-        if(user and check_password_hash(user.password, password)):
+        if(user and check_password_hash(user.password, password)):  # If the user exists and the password hashes matches the user gets loged in.
             login_user(user)
             return redirect(url_for('index'))
-        else:
-            error = "Bitte überprüfe deine Logininformationen und probiere es nochmals"
+        else:                                                       # If there is provided wrong data the login site gets displayd with an error message
+            error = "Bitte überprüfen Sie ihre Logininformationen und probieren Sie es nochmals"
             return render_template('login.html', error=error)
-    else:
+    else:                                                           # If its a get request it will show the login form
         return render_template('login.html')
 
 
 @app.route('/logout')
 @login_required
-def logout():
+def logout(): # Logs out the user
     logout_user()
     return redirect("/")
 
 
 # ------------Webinterface--------------------
 
-@app.route('/', methods=['GET'])  # Handels request for www.air-solutions.ch/
-def index():
-    # Opens template file and sends it to the user
+@app.route('/', methods=['GET'])    # Handels request for the mainpage
+def index():                        # Opens template file and sends it to the user
 
-    currentsensor = request.args.get('currentsensor') # Gets the selected sensor from the URL
-    startdate = request.args.get('startdate')
-    enddate = request.args.get('enddate')
-
-    print(enddate)
+    currentsensor = request.args.get('currentsensor')   # Gets the selected sensor from the URL
+    startdate = request.args.get('startdate')           # Gets the startdate from the URL
+    enddate = request.args.get('enddate')               # Gets the enddate from the URL
 
 
-
-
-   
-
-    if(currentsensor and (enddate == None or startdate == None)):  # Checks if the var is empty
+    if(currentsensor and (startdate == None or enddate == None)):  # Checks if the var is empty
         daten = dbSenData.query.filter_by(sensorid=currentsensor).order_by(dbSenData.timestamp.desc()) # Selects just the wanted Sensordata
         chartdata = daten.limit(30)
         showchart = True
 
-    elif(currentsensor and startdate  and enddate ):
-        startdate = datetime.strptime(startdate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M')
-        enddate = datetime.strptime(enddate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M')
-        """ For Debug
-        print(currentsensor)
-        print("Startdate: " + startdate)
-        print("Enddate: " + enddate)
-        """
-        
+    elif(currentsensor and startdate  and enddate ):                # Checks if the var is empty
+        startdate = datetime.strptime(startdate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M') # Formats the startdate
+        enddate = datetime.strptime(enddate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M')     # Formats the enddate
+      
         daten = dbSenData.query.filter_by(sensorid = currentsensor).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate).order_by(dbSenData.timestamp.desc())
         chartdata = dbSenData.query.filter_by(sensorid = currentsensor).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate)
         showchart = True
 
-    else:   #When the var is empty
+    else:   #When the vars are empty
         daten = dbSenData.query.order_by(dbSenData.timestamp.desc()).limit(50)# Selects the last 50 datapoints
         chartdata = daten
         showchart = False
@@ -131,17 +123,11 @@ def index():
     error=""
     return render_template('index.html', daten=daten, chartdata=chartdata, sensors=dbSensors.query.all(), showchart=showchart, error=error)
 
-
-
-    
-
-
 # Handels request for www.air-solutions.ch/sensors
 @app.route('/sensors', methods=['GET'])
 @login_required
 def sensors():
     return render_template('sensors.html', sensors=dbSensors.query.all())
-
 
 # Handels request for www.air-solutions.ch/admin
 @app.route('/admin', methods=['GET'])
@@ -149,36 +135,35 @@ def sensors():
 def admin():
     return render_template('admin.html')
 
-# ------------Sensor-API----------------------
+# ------------API----------------------
 
-
+# To save de Data from the Sensor
 @app.route('/sensors/api/savedata', methods=['POST'])
 def api_savedata():
     data = request.json  # Gets the data from the POST request
 
-    sen_id = data['sensor_id']  # Reads the sensor-ID from the request
-    # Reads the sensor-secret from the request
-    sen_secret = data['sensor_secret']
+    sen_id = data['sensor_id']          # Reads the sensor-ID from the request
+    sen_secret = data['sensor_secret']  # Reads the sensor-secret from the request
 
-    sensorlist = dbSensors.query.all()
+    sensor = dbSensors.query.filter_by(sensorid=sen_id).first()
 
-    for x in sensorlist:
-        # When the sensor-id and the secret matches
-        if(x.sensorid == sen_id and x.sensorsecret == sen_secret):
+    if(sensor and sensor.sensorsecret == sen_secret): # When the sensor-id and the secret matches
 
-            # It greates an object wich gets sends to the DB
-            sensordata = dbSenData(sensorid=data['sensor_id'], co2=data['co2'],
-                                   temp=data['temp'], hum=data['hum'], timestamp=data['timestamp'])
-            # Sends Obj to the DB
-            db.session.add(sensordata)
-            x.lastseen = time.strftime('%H:%M:%S %d.%m.%Y')
-            # Saves changes to DB
-            db.session.commit()
+        # It greates an object wich gets sends to the DB
+        sensordata = dbSenData(sensorid=data['sensor_id'], co2=data['co2'],temp=data['temp'], hum=data['hum'], timestamp=data['timestamp'])
+        
+        db.session.add(sensordata)# Sends Obj to the DB
+        sensor.lastseen = time.strftime('%H:%M:%S %d.%m.%Y') # Upates the last seen in the Senors DB Table
+        db.session.commit()# Saves changes to DB
 
-            return "<p>Values Saved</p>", 200  # This returns a http 200
+        return "<p>Values Saved</p>", 200  # This returns a http 200
+    
+    else:
+        return "<p>Error: No matching sensor or wrong secret</p>", 406
+      
 
-    return "Error: No matching sensor or wrong secret"
-
+    
+# To Export the data in CSV Format
 @app.route('/sensors/api/exportdata', methods=['POST'])
 def api_exportdata():
     data = request.form # Gets the data from the POST request
@@ -197,28 +182,24 @@ def api_exportdata():
 
         exportdata = dbSenData.query.filter_by(sensorid = sen_id).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate)
 
-        with open('./download/_daten.csv', 'w') as f:
+        with open('./download/_daten.csv', 'w') as f: # Creates a file or opens it
             out = csv.writer(f, delimiter=";")
-            out.writerow(['Messzeitpunkt', 'CO2', 'hum', 'temp'])
+            out.writerow(['Messzeitpunkt', 'CO2', 'Luftfeuchtigkeit', 'Temperatur']) # Writes the colum names
 
             for item in exportdata:
-                out.writerow([item.timestamp, item.co2, item.hum, item.temp])
+                out.writerow([item.timestamp, item.co2, item.hum, item.temp]) # Adds each row to the file
 
-            f.close
+            f.close #Closes the File
         
-        return send_file('./download/_daten.csv', mimetype="text/csv", attachment_filename= sen_id + "_daten.csv", as_attachment=True)
+        return send_file('./download/_daten.csv', mimetype="text/csv", attachment_filename= sen_id + "_daten.csv", as_attachment=True) # Sends the file to the client.
 
-    except ValueError:
+    except ValueError: # When a value was not set
         print("No Values given")
         error = "Bitte wählen Sie einen Sensor und eine Zeitraum aus!"
-        flash(u'Invalid password provided', 'error')
         return redirect(url_for("index", currentsensor=sen_id))
-    
-
-   
 
 
-
+# To add a sensor
 @app.route('/sensors/api/addsensor', methods=['POST'])
 @login_required
 def addSensor():
@@ -240,6 +221,7 @@ def addSensor():
     return redirect(url_for('sensors'))
 
 
+# To delete a sensor and its data
 @app.route('/sensors/api/delsensor', methods=['POST'])
 @login_required
 def delSensor():
@@ -259,11 +241,14 @@ def delSensor():
 
 
 # ------------Error Handling------------------
+@app.errorhandler(403)
+def page_not_found(e):
+    return "<h1>403</h1><p>Sie sind nicht berechtig diese Seite aufzurufen.</p>", 403
+
 @app.errorhandler(404)
 def page_not_found(e):
-    return "<h1>404</h1><p>The resource could not be found.</p>", 404
-
+    return "<h1>404</h1><p>Die gewünschte Seite wurde nicht gefunden.</p>", 404
 
 # --Starts the Server
 if(__name__ == "__main__"):
-    app.run(debug=True)
+    app.run(debug=True) # Server startparameter
