@@ -275,9 +275,9 @@ def addUser():
     password = data['password']
     password1 = data['password1']
 
-    print(flask_login.current_user)
+    print()
 
-    if(password == password1):
+    if(password == password1 and password_check(str(password_check))):
 
         try:
             hash = generate_password_hash(password)
@@ -310,7 +310,8 @@ def delUser():
 
     username = data['username_del']
 
-    print(username)
+    if(username == current_user.username):
+        return redirect(url_for('admin'))
 
     try:
         dbUsers.query.filter_by(username=username).delete()
