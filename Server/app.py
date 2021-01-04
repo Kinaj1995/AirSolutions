@@ -17,7 +17,36 @@ app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 
-# ------------Global Var----------------------
+# ------------Functions----------------------
+
+def password_check(passwd): 
+      
+    SpecialSym =['$', '@', '#', '%'] 
+    val = True
+      
+    if len(passwd) < 8:
+        val = False
+          
+    if len(passwd) > 20:
+        val = False
+          
+    if not any(char.isdigit() for char in passwd): 
+        print('Password should have at least one numeral') 
+        val = False
+          
+    if not any(char.isupper() for char in passwd): 
+        print('Password should have at least one uppercase letter') 
+        val = False
+          
+    if not any(char.islower() for char in passwd): 
+        print('Password should have at least one lowercase letter') 
+        val = False
+          
+    if not any(char in SpecialSym for char in passwd): 
+        print('Password should have at least one of the symbols $@#') 
+        val = False
+    if val: 
+        return val 
 
 
 # ------------DB Models-----------------------
@@ -133,7 +162,7 @@ def sensors():
 @app.route('/admin', methods=['GET'])
 @login_required
 def admin():
-    return render_template('admin.html')
+    return render_template('admin.html', user=dbUsers.query.all())
 
 # ------------API----------------------
 
@@ -236,6 +265,65 @@ def delSensor():
 
     return redirect(url_for('sensors'))
 
+
+@app.route('/users/api/adduser', methods=['POST'])
+@login_required
+def addUser():
+    data = request.form         # Gets the data from the POST request
+
+    username = data['username']
+    password = data['password']
+    password1 = data['password1']
+
+    print(flask_login.current_user)
+
+    if(password == password1):
+
+        try:
+            hash = generate_password_hash(password)
+
+            user = dbUsers(username=username, password=hash)
+
+            db.session.add(user)
+            db.session.commit()
+
+            return redirect(url_for('admin'))
+
+        except Exception:
+
+            error = "Der Benutzername ist bereits vergeben."
+
+    else:
+        error = "Passwörter stimmen nicht überein oder nicht den Richtlinien entsprechend."
+
+
+        
+    
+    return render_template('adduser.html', error=error)
+
+
+@app.route('/users/api/deluser', methods=['POST'])
+@login_required
+def delUser():
+
+    data = request.form         # Gets the data from the POST request
+
+    username = data['username_del']
+
+    print(username)
+
+    try:
+        dbUsers.query.filter_by(username=username).delete()
+        db.session.commit()
+
+        return redirect(url_for('admin'))
+
+    except Exception:
+        
+        print("Ein Fehler ist aufgetreten")
+        return redirect(url_for('admin'))
+
+    
 
 
 

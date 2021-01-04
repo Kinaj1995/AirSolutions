@@ -41,12 +41,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for x in User %}
+                    {% for x in user %}
                     <tr>
                         <td>{{ x.username }}</td>
                         <td>
                             <button type="button" class="btn btn-outline-danger" data-toggle="modal"
-                                data-target="#deleteUser" data-sensorid="{{ x.username }}">
+                                data-target="#deleteUser" data-username="{{ x.username }}">
                                 Löschen
                             </button>
                         </td>
@@ -71,13 +71,30 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="/users/api/addUser" method="POST">
+                <form action="/users/api/adduser" method="POST">
                     <div class="form-group">
-                        <label for="username" class="form-label">Username</label>
+                        <label for="username" class="form-label">Benutzername</label>
                         <input type="text" class="form-control" name="username" id="username">
-                    </div>                
+                    </div>     
+                    
+                    <div class="form-group">
+                        <label for="password" class="form-label">Passwort</label>
+                        <input type="password" class="form-control" name="password" id="password">
+                    </div>
+
+                    <p>Das Passwort muss folgenden Standarts gerecht werden:</p>
+                    <li>min. 8 Zeichen / max. 20</li>
+                    <li>min. ein Klein- und Grossbuchstaben</li>
+                    <li>min. eine Zahl</li>
+                    <li>min. ein Sonderzeichen</li>
+
+                    <div class="form-group">
+                        <label for="password1" class="form-label">Passwort wiederholen</label>
+                        <input type="password" class="form-control" name="password1" id="password1">
+                    </div>
             </div>
             <div class="modal-footer">
+                
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
                 <input type="submit" class="btn btn-info" value="User hinzufügen"></input>
             </div>
@@ -98,12 +115,14 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>Es wird der User gelöscht.</p>
-                <p>Dies kann nicht Rückgängig gemacht werden!
+                <p id="delTitel">Es wird folgender Benutzer gelöscht:</p>
+            
+                <p>
+                    Dies kann nicht Rückgängig gemacht werden!
                     Möchten Sie dies durchführen?
                 </p>
                 <form action="/users/api/deluser" method="POST">
-                    <input type="hidden" id="username_hidden" name="username_hidden" value="">
+                    <input type="hidden" id="username_del" name="username_del" value="">
 
             </div>
             <div class="modal-footer">
@@ -127,10 +146,11 @@
 <script>
 
     // 
-    $('#deleteuSER').on('show.bs.modal', function (event) {
+    $('#deleteUser').on('show.bs.modal', function (event) {
         var button = event.relatedTarget // Gets the button who opens the modal
         var recipient = button.getAttribute('data-username') // Extracts the data from the specific button
-        document.getElementById('username_hidden').setAttribute('value',recipient) // Sets the hidden field to the correct Sensor ID
+        document.getElementById('delTitel').insertAdjacentText("afterend", recipient) // Sets the hidden field to the correct Sensor ID
+        document.getElementById('username_del').setAttribute('value',recipient) // Sets the hidden field to the correct Sensor ID
 
     });
 </script>
