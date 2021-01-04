@@ -22,10 +22,10 @@
 
 <body>
 
-<!--Navbar-->
+    <!--Navbar-->
     <nav class="navbar navbar-expand navbar-dark bg-dark">
         <a class="navbar-brand" href="/">
-            <img src="{{url_for('static', filename='Logo_trans.png')}}" width="40" height="40"/>
+            <img src="{{url_for('static', filename='Logo_trans.png')}}" width="40" height="40" />
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample02"
             aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,28 +49,33 @@
 
             </ul>
             {% if current_user.is_authenticated %}
+
+
+            
             <form class="form-inline my-2 my-md-0" action="/logout" method="GET">
                 <input class="btn btn-info" type="submit" value="Logout">
             </form>
+        </div>
             {% else %}
             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#loginModal">Login</button>
             {% endif %}
 
         </div>
     </nav>
-<!--End Navbar-->
+    <!--End Navbar-->
 
     {% block body %} {% endblock %}
 
-<!--Login Popup-->
-    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!--Login Popup-->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Login</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <form action="/login" method="POST">
@@ -79,7 +84,8 @@
                         </div>
 
                         <div class="form-group">
-                            <input type="password" class="form-control" name="password" id="password" placeholder="password">
+                            <input type="password" class="form-control" name="password" id="password"
+                                placeholder="password">
                         </div>
                 </div>
                 <div class="modal-footer">
