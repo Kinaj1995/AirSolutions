@@ -19,9 +19,23 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 # ------------Functions----------------------
 
+def name_check(string):
+    val = True
+
+    if len(string) < 2:
+        val = False
+    
+    if len(string) > 20:
+        val = False
+
+    if val: 
+        return val 
+    
+
+
 def password_check(passwd): 
       
-    SpecialSym =['$', '@', '#', '%'] 
+    SpecialSym =['$', '@', '#', '%', '!'] 
     val = True
       
     if len(passwd) < 8:
@@ -37,7 +51,7 @@ def password_check(passwd):
     if not any(char.isupper() for char in passwd): 
         print('Password should have at least one uppercase letter') 
         val = False
-          
+         
     if not any(char.islower() for char in passwd): 
         print('Password should have at least one lowercase letter') 
         val = False
@@ -45,6 +59,7 @@ def password_check(passwd):
     if not any(char in SpecialSym for char in passwd): 
         print('Password should have at least one of the symbols $@#') 
         val = False
+    
     if val: 
         return val 
 
@@ -223,9 +238,8 @@ def api_exportdata():
         return send_file('./download/_daten.csv', mimetype="text/csv", attachment_filename= sen_id + "_daten.csv", as_attachment=True) # Sends the file to the client.
 
     except ValueError: # When a value was not set
-        print("No Values given")
-        error = "Bitte wählen Sie einen Sensor und eine Zeitraum aus!"
-        return redirect(url_for("index", currentsensor=sen_id))
+        error = "Bitte wählen Sie einen Zeitraum aus!"
+        return redirect(url_for("index", currentsensor=sen_id, error=error))
 
 
 # To add a sensor
@@ -242,12 +256,25 @@ def addSensor():
 
     savetime = "Erfasst: " + time.strftime('%H:%M %d.%m.%Y')
 
-    sensor = dbSensors(sensorid=sen_id, sensorsecret=sen_secret, lastseen=savetime, location=sen_location, description=sen_description)
+    if(name_check(sen_id) and password_check(sen_secret)):
 
-    db.session.add(sensor)
-    db.session.commit()
+        try:
+            sensor = dbSensors(sensorid=sen_id, sensorsecret=sen_secret, lastseen=savetime, location=sen_location, description=sen_description)
 
-    return redirect(url_for('sensors'))
+            db.session.add(sensor)
+            db.session.commit()
+
+            return redirect(url_for('sensors'))
+        
+        except Exception:
+            error = "Der Sensor konnte nicht erfasst werden."
+
+    else:
+        error = "Die Sensor ID Sensor Secret entspricht nicht den Richtlinien"
+    
+    return redirect(url_for('sensors', error=error))
+
+    
 
 
 # To delete a sensor and its data
@@ -275,9 +302,7 @@ def addUser():
     password = data['password']
     password1 = data['password1']
 
-    print()
-
-    if(password == password1 and password_check(str(password_check))):
+    if(password == password1 and name_check(username) and password_check(password)):
 
         try:
             hash = generate_password_hash(password)
@@ -294,12 +319,9 @@ def addUser():
             error = "Der Benutzername ist bereits vergeben."
 
     else:
-        error = "Passwörter stimmen nicht überein oder nicht den Richtlinien entsprechend."
-
-
-        
+        error = "Passwörter stimmen nicht überein oder entspricht nicht den Richtlinien."
     
-    return render_template('adduser.html', error=error)
+    return redirect(url_for('admin', error=error))
 
 
 @app.route('/users/api/deluser', methods=['POST'])
@@ -311,19 +333,20 @@ def delUser():
     username = data['username_del']
 
     if(username == current_user.username):
-        return redirect(url_for('admin'))
+        error = "Der eigene Benutzer kann nicht gelöscht werden!"
 
-    try:
-        dbUsers.query.filter_by(username=username).delete()
-        db.session.commit()
+    else:
+        try:
+            dbUsers.query.filter_by(username=username).delete()
+            db.session.commit()
 
-        return redirect(url_for('admin'))
+            return redirect(url_for('admin'))
 
-    except Exception:
-        
-        print("Ein Fehler ist aufgetreten")
-        return redirect(url_for('admin'))
-
+        except Exception:
+            
+            error = "Der Benutzer konnte nicht gelöscht werden."
+            
+    return redirect(url_for('admin', error=error))
     
 
 

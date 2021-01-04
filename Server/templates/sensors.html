@@ -9,6 +9,11 @@
 
 {% block body %}
 
+{% set error = request.args.get('error') %}
+{% if error %}
+<div class="alert alert-danger" role="alert">{{ error }}</div>
+{% endif %}
+
 <div class="container-fluid">
 
 

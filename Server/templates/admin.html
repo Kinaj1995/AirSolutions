@@ -1,18 +1,20 @@
-
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 
 {% block head %}
 
 
-{% endblock %} 
+{% endblock %}
 
 
 
 {% block body %}
 
+{% set error = request.args.get('error') %}
+{% if error %}
+<div class="alert alert-danger" role="alert">{{ error }}</div>
+{% endif %}
+
 <div class="container-fluid">
-
-
 
     <main role="main" class="col-md">
         <div
@@ -75,8 +77,8 @@
                     <div class="form-group">
                         <label for="username" class="form-label">Benutzername</label>
                         <input type="text" class="form-control" name="username" id="username">
-                    </div>     
-                    
+                    </div>
+
                     <div class="form-group">
                         <label for="password" class="form-label">Passwort</label>
                         <input type="password" class="form-control" name="password" id="password">
@@ -94,7 +96,7 @@
                     </div>
             </div>
             <div class="modal-footer">
-                
+
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
                 <input type="submit" class="btn btn-info" value="User hinzufügen"></input>
             </div>
@@ -116,7 +118,7 @@
             </div>
             <div class="modal-body">
                 <p id="delTitel">Es wird folgender Benutzer gelöscht:</p>
-            
+
                 <p>
                     Dies kann nicht Rückgängig gemacht werden!
                     Möchten Sie dies durchführen?
@@ -150,7 +152,7 @@
         var button = event.relatedTarget // Gets the button who opens the modal
         var recipient = button.getAttribute('data-username') // Extracts the data from the specific button
         document.getElementById('delTitel').insertAdjacentText("afterend", recipient) // Sets the hidden field to the correct Sensor ID
-        document.getElementById('username_del').setAttribute('value',recipient) // Sets the hidden field to the correct Sensor ID
+        document.getElementById('username_del').setAttribute('value', recipient) // Sets the hidden field to the correct Sensor ID
 
     });
 </script>
