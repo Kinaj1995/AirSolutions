@@ -51,11 +51,18 @@
             {% if current_user.is_authenticated %}
 
 
-            
+            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            <span data-feather="calendar"></span>
+            Benutzername
+          </button>
+          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">                        
             <form class="form-inline my-2 my-md-0" action="/logout" method="GET">
                 <input class="btn btn-info" type="submit" value="Logout">
             </form>
         </div>
+
+
             {% else %}
             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#loginModal">Login</button>
             {% endif %}
