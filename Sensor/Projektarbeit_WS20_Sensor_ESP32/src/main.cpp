@@ -1,118 +1,124 @@
-/*
-  This shetch reads values from the Sensirion SGP30 VOC sensor and transmits it via MQTT
- It can be adabted to the ESP32 by using the AsynchMQTT Library example of the ESP32 and by filling in the needed sensor commands from this sketch
-  
-  It is based on the examples of the libraries
+/**
+ * WiFiManager advanced demo, contains advanced configurartion options
+ * Implements TRIGGEN_PIN button press, press for ondemand configportal, hold for 3 seconds for reset settings.
+ */
 
-  Copyright: Andreas Spiess 2019
+//--Libaries
+#include <WiFiManager.h> // https://github.com/tzapu/WiFiManager
 
-  Copyright: Andreas Spiess 2019
-*/
+//--Other-Files
+#include <settings.h>
 
+#define TRIGGER_PIN 0
 
-#include <Wire.h>
-#include <Adafruit_SGP30.h>
+WiFiManager wm; // global wm instance
+WiFiManagerParameter custom_field; // global param ( for non blocking w params )
 
-
-unsigned int eco2;
-unsigned int tvoc;
-char payloadStr[100];
-unsigned long entryLoop, entryPublish;
-
-
-Adafruit_SGP30 sgp;
-
-
-
-uint32_t getAbsoluteHumidity(float temperature, float humidity) {
-  // approximation formula from Sensirion SGP30 Driver Integration chapter 3.15
-  const float absoluteHumidity = 216.7f * ((humidity / 100.0f) * 6.112f * exp((17.62f * temperature) / (243.12f + temperature)) / (273.15f + temperature)); // [g/m^3]
-  const uint32_t absoluteHumidityScaled = static_cast<uint32_t>(1000.0f * absoluteHumidity); // [mg/m^3]
-  return absoluteHumidityScaled;
-}
-
-
-
-void setup()
-{
+void setup() {
+  WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP  
   Serial.begin(115200);
-  Serial.println("SGP30 test");
+  Serial.setDebugOutput(true);  
+  delay(3000);
+  Serial.println("\n Starting");
 
-  if (! sgp.begin()) {
-    Serial.println("Sensor not found :(");
-    while (1);
+  pinMode(TRIGGER_PIN, INPUT);
+  
+  // wm.resetSettings(); // wipe settings
+
+  // add a custom input field
+  int customFieldLength = 40;
+
+
+  // new (&custom_field) WiFiManagerParameter("customfieldid", "Custom Field Label", "Custom Field Value", customFieldLength,"placeholder=\"Custom Field Placeholder\"");
+  
+  // test custom html input type(checkbox)
+  // new (&custom_field) WiFiManagerParameter("customfieldid", "Custom Field Label", "Custom Field Value", customFieldLength,"placeholder=\"Custom Field Placeholder\" type=\"checkbox\""); // custom html type
+  
+  // test custom html(radio)
+  const char* custom_radio_str = "<br/><label for='customfieldid'>Custom Field Label</label><input type='radio' name='customfieldid' value='1' checked> One<br><input type='radio' name='customfieldid' value='2'> Two<br><input type='radio' name='customfieldid' value='3'> Three";
+  new (&custom_field) WiFiManagerParameter(custom_radio_str); // custom html input
+  
+  wm.addParameter(&custom_field);
+  //wm.setSaveParamsCallback(saveParamCallback);
+
+  // custom menu via array or vector
+  // 
+  // menu tokens, "wifi","wifinoscan","info","param","close","sep","erase","restart","exit" (sep is seperator) (if param is in menu, params will not show up in wifi page!)
+  // const char* menu[] = {"wifi","info","param","sep","restart","exit"}; 
+  // wm.setMenu(menu,6);
+  std::vector<const char *> menu = {"wifi","info","param","sep","restart","exit"};
+  wm.setMenu(menu);
+
+  // set dark theme
+  wm.setClass("invert");
+
+
+  // wm.setConnectTimeout(20); // how long to try to connect for before continuing
+  wm.setConfigPortalTimeout(60); // auto close configportal after n seconds
+  wm.setAPClientCheck(true); // avoid timeout if client connected to softap
+
+
+  bool res;
+  res = wm.autoConnect(APNAME,APPASSWORD); // Starts a password protectet AP
+
+  if(!res) {
+    Serial.println("Failed to connect or hit timeout");
+    // ESP.restart();
+  } 
+  else {
+    //if you get here you have connected to the WiFi    
+    Serial.println("connected...yeey :)");
   }
-  Serial.print("Found SGP30 serial #");
-  Serial.print(sgp.serialnumber[0], HEX);
-  Serial.print(sgp.serialnumber[1], HEX);
-  Serial.println(sgp.serialnumber[2], HEX);
-
-
-
-
-
-
-  sgp.setHumidity(8200);  //8200 mg/m3 humidity (35% at 25 degrees
-
-  // the first eco2 meaurements are always 400
-  do {
-    while (!sgp.IAQmeasure()) {
-      Serial.print(".");
-      delay(100);
-    }
-    tvoc = sgp.TVOC;
-    Serial.print("TVOC(ppb):");
-    Serial.print(tvoc);
-
-    eco2 = sgp.eCO2;
-    tvoc = sgp.TVOC;
-    Serial.print(" eco2(ppm):");
-    Serial.println(eco2);
-    delay(1000);
-  } while (eco2 == 400);
-  entryLoop = millis();
 }
 
-void loop()
-{
-  static String payload;
-  while (!sgp.IAQmeasure()) {
-    Serial.print(".");
-    delay(100);
+void checkButton(){
+  // check for button press
+  if ( digitalRead(TRIGGER_PIN) == LOW ) {
+    // poor mans debounce/press-hold, code not ideal for production
+    delay(50);
+    if( digitalRead(TRIGGER_PIN) == LOW ){
+      Serial.println("Button Pressed");
+      // still holding button for 3000 ms, reset settings, code not ideaa for production
+      delay(3000); // reset delay hold
+      if( digitalRead(TRIGGER_PIN) == LOW ){
+        Serial.println("Button Held");
+        Serial.println("Erasing Config, restarting");
+        wm.resetSettings();
+        ESP.restart();
+      }
+      
+      // start portal w delay
+      Serial.println("Starting config portal");
+      wm.setConfigPortalTimeout(120);
+      
+      if (!wm.startConfigPortal("OnDemandAP","password")) {
+        Serial.println("failed to connect or hit timeout");
+        delay(3000);
+        // ESP.restart();
+      } else {
+        //if you get here you have connected to the WiFi
+        Serial.println("connected...yeey :)");
+      }
+    }
   }
-
-  tvoc = ((19 * tvoc) + sgp.TVOC) / 20;
-  Serial.print("TVOC(ppb):");
-  Serial.print(tvoc);
-
-  eco2 = ((19 * eco2) + sgp.eCO2) / 20;
-  Serial.print(" eco2(ppm):");
-  Serial.print(eco2);
+}
 
 
-  while (!sgp.IAQmeasureRaw()) {
-    Serial.print(".");
-    delay(100);
+String getParam(String name){
+  //read parameter from server, for customhmtl input
+  String value;
+  if(wm.server->hasArg(name)) {
+    value = wm.server->arg(name);
   }
-  unsigned int rawh2 = sgp.rawH2;
-  Serial.print(" rawH2:");
-  Serial.print(rawh2);
+  return value;
+}
 
-  unsigned int ethanol = sgp.rawEthanol;
-  Serial.print(" Ethanol:");
-  Serial.print(ethanol);
+void saveParamCallback(){
+  Serial.println("[CALLBACK] saveParamCallback fired");
+  Serial.println("PARAM customfieldid = " + getParam("customfieldid"));
+}
 
-  Serial.print(" ");
-  Serial.println((millis() - entryPublish) / 1000);
-
-  if (millis() - entryPublish > 120000) {
-    payload = "{\"tvoc\":" + String(tvoc) + ", \"eco2\":" + String(eco2) + ", \"rawh2\":" + String(rawh2) + ", \"ethanol\":" + String(ethanol) + "}";
-    Serial.println(payload);
-    payload.toCharArray(payloadStr, payload.length() + 1);
-    entryPublish = millis();
-  } 
-  Serial.println();
-  while (millis() - entryLoop < 1000) yield();
-  entryLoop = millis();
-
+void loop() {
+  checkButton();
+  // put your main code here, to run repeatedly:
 }
