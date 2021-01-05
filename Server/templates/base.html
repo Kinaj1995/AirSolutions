@@ -52,15 +52,19 @@
 
 
             <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            <span data-feather="calendar"></span>
-            Benutzername
-          </button>
-          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">                        
-            <form class="form-inline my-2 my-md-0" action="/logout" method="GET">
-                <input class="btn btn-info" type="submit" value="Logout">
-            </form>
-        </div>
+                aria-haspopup="true" aria-expanded="false">
+                <span data-feather="user"></span>
+                current_user
+            </button>
+
+            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                <form class="form-inline my-2 my-md-0" action="/logout" method="GET">
+                    <input class="btn btn-info" type="submit" value="Logout">
+                </form>
+                <form class="form-inline my-2 my-md-0" action="/changePW" method="GET">
+                    <input class="btn btn-info" type="submit" value="changePW">
+                </form>
+            </div>
 
 
             {% else %}
