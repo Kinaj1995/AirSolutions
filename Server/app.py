@@ -30,6 +30,16 @@ def name_check(string):
 
     if val: 
         return val 
+
+def date_check(startdate, enddate):
+    if(startdate>enddate):
+        temp = startdate
+        startdate = enddate
+        enddate = temp
+
+
+
+    return startdate, enddate
     
 
 
@@ -63,6 +73,13 @@ def password_check(passwd):
     if val: 
         return val 
 
+# ------------Template Filters----------------
+
+@app.template_filter('strftime')
+def _jinja2_filter_datetime(date, fmt=None):
+    timestamp = date.strftime('%d.%m.%Y %H:%M')
+    return timestamp
+
 
 # ------------DB Models-----------------------
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/db.db'    #Testing DB
@@ -92,7 +109,7 @@ class dbSenData(db.Model):
     co2 = db.Column(db.Integer)
     temp = db.Column(db.Integer)
     hum = db.Column(db.Integer)
-    timestamp = db.Column(db.String(20), nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False)
 
 
 # ------------Login---------------------------
@@ -146,28 +163,54 @@ def index():                        # Opens template file and sends it to the us
     startdate = request.args.get('startdate')           # Gets the startdate from the URL
     enddate = request.args.get('enddate')               # Gets the enddate from the URL
 
-
-    if(currentsensor and (startdate == None or enddate == None)):  # Checks if the var is empty
+    if(currentsensor):
         sensor = dbSensors.query.filter_by(sensorid=currentsensor).first()
-        daten = dbSenData.query.filter_by(sendata=sensor).order_by(dbSenData.timestamp.desc()) # Selects just the wanted Sensordata
-        chartdata = daten.limit(30)
-        showchart = True
+        dbdata = dbSenData.query.filter_by(sendata=sensor)
 
-    elif(currentsensor and startdate  and enddate ):                # Checks if the var is empty
-        sensor = dbSensors.query.filter_by(sensorid=currentsensor).first()
-        startdate = datetime.strptime(startdate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M') # Formats the startdate
-        enddate = datetime.strptime(enddate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M')     # Formats the enddate
-      
-        daten = dbSenData.query.filter_by(sendata = sensor).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate).order_by(dbSenData.timestamp.desc())
-        chartdata = dbSenData.query.filter_by(sendata = sensor).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate)
-        showchart = True
-
-    else:   #When the vars are empty
-        daten = dbSenData.query.order_by(dbSenData.timestamp.desc()).limit(50)# Selects the last 50 datapoints
-        chartdata = daten
+        error = ""
         showchart = False
 
-    error=""
+        try:
+
+            if(startdate == None or enddate == None):  # Checks if the var is empty
+                            
+                daten = dbdata.order_by(dbSenData.timestamp.desc()).limit(1000) # Selects just the wanted Sensordata, max 1000 entires
+                chartdata = dbdata.order_by(dbSenData.timestamp.asc()).limit(30) # Selects just the wanted Sensordata, max 30 entires for the chart
+                showchart = True
+
+            elif(startdate  and enddate ):             # Checks if the var is empty
+                
+                startdate = datetime.strptime(startdate, '%Y-%m-%d') # Formats the startdate into an obj
+                enddate = datetime.strptime(enddate, '%Y-%m-%d')    # Formats the enddate  into an obj
+
+                startdate, enddate = date_check(startdate, enddate) # Data comparison
+
+            
+                dbdata = dbdata.filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate)
+
+                daten = dbdata.order_by(dbSenData.timestamp.desc())
+                chartdata = dbdata.order_by(dbSenData.timestamp.asc())
+                showchart = True
+
+
+            else:
+                daten = dbdata.limit(50)
+                chartdata = dbdata.limit(50)
+                error = "Es ist ein unerwarteter Fehler aufgetreten."
+                
+
+        except ValueError:
+            daten = dbdata.limit(50)
+            chartdata = dbdata.limit(50)
+            error = "Es wurde ein falscher Wert mitgegeben."
+
+
+    else:   #When the vars are empty
+        daten = dbSenData.query.order_by(dbSenData.timestamp.desc()).limit(1000)# Selects the last 1000 datapoints
+        chartdata = daten
+
+
+    
     return render_template('index.html', daten=daten, chartdata=chartdata, sensors=dbSensors.query.all(), showchart=showchart, error=error)
 
 # Handels request for www.air-solutions.ch/sensors
@@ -196,11 +239,12 @@ def api_savedata():
 
     if(sensor and sensor.sensorsecret == sen_secret): # When the sensor-id and the secret matches
 
+        timestamp = datetime.strptime(data['timestamp'], '%d.%m.%Y %H:%M:%S')
         # It greates an object wich gets sends to the DB
-        sensordata = dbSenData(sendata=sensor, co2=data['co2'],temp=data['temp'], hum=data['hum'], timestamp=data['timestamp'])
+        sensordata = dbSenData(sendata=sensor, co2=data['co2'],temp=data['temp'], hum=data['hum'], timestamp=timestamp)
         
         db.session.add(sensordata)# Sends Obj to the DB
-        sensor.lastseen = time.strftime('%H:%M:%S %d.%m.%Y') # Upates the last seen in the Senors DB Table
+        sensor.lastseen = time.strftime('%d-%m-%Y %H:%M:%S') # Upates the last seen in the Senors DB Table
         db.session.commit()# Saves changes to DB
 
         return "<p>Values Saved</p>", 200  # This returns a http 200
@@ -220,14 +264,13 @@ def api_exportdata():
     enddate = data['enddate']
 
     try:
-        startdate = datetime.strptime(startdate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M')
-        enddate = datetime.strptime(enddate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M')
+        startdate = datetime.strptime(startdate, '%Y-%m-%d')
+        enddate = datetime.strptime(enddate, '%Y-%m-%d')
 
-        print(sen_id)
-        print("Startdate: " + startdate)
-        print("Enddate: " + enddate)
+        startdate, enddate = date_check(startdate, enddate) # Data comparison
+
         sensor = dbSensors.query.filter_by(sensorid=sen_id).first()
-        exportdata = dbSenData.query.filter_by(sendata = sensor).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate)
+        exportdata = dbSenData.query.filter_by(sendata = sensor).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate).order_by(dbSenData.timestamp.desc())
 
         with open('./download/_daten.csv', 'w') as f: # Creates a file or opens it
             out = csv.writer(f, delimiter=";")

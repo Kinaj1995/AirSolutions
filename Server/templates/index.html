@@ -28,10 +28,16 @@
 
 {% block body %}
 
+
+{% if error %}
+<div class="alert alert-danger" role="alert">{{ error }}</div>
+{% endif %}
 {% set error = request.args.get('error') %}
 {% if error %}
 <div class="alert alert-danger" role="alert">{{ error }}</div>
 {% endif %}
+
+
 
 <div class="container-fluid">
   <div class="row">
@@ -116,7 +122,7 @@
           <tbody>
             {% for x in daten %}
             <tr>
-              <td>{{ x.timestamp }}</td>
+              <td>{{ x.timestamp|strftime }}</td>
               <td>{{ x.sendata.sensorid }}</td>
               <td>{{ x.co2}} ppm</td>
               <td>{{ x.hum }} %</td>
