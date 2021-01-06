@@ -80,6 +80,7 @@ class dbSensors(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sensorid = db.Column(db.String(10), nullable=False)
     sensorsecret = db.Column(db.String(10), nullable=False)
+    sensordata = db.relationship('dbSenData', backref='sendata', lazy=True)
     lastseen = db.Column(db.String(20))
     location = db.Column(db.String(50))
     description = db.Column(db.Text)
@@ -87,7 +88,7 @@ class dbSensors(db.Model):
 
 class dbSenData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    sensorid = db.Column(db.String(10), nullable=False)
+    sensorid = db.Column(db.Integer, db.ForeignKey('db_sensors.id'), nullable=False)
     co2 = db.Column(db.Integer)
     temp = db.Column(db.Integer)
     hum = db.Column(db.Integer)
@@ -147,16 +148,18 @@ def index():                        # Opens template file and sends it to the us
 
 
     if(currentsensor and (startdate == None or enddate == None)):  # Checks if the var is empty
-        daten = dbSenData.query.filter_by(sensorid=currentsensor).order_by(dbSenData.timestamp.desc()) # Selects just the wanted Sensordata
+        sensor = dbSensors.query.filter_by(sensorid=currentsensor).first()
+        daten = dbSenData.query.filter_by(sendata=sensor).order_by(dbSenData.timestamp.desc()) # Selects just the wanted Sensordata
         chartdata = daten.limit(30)
         showchart = True
 
     elif(currentsensor and startdate  and enddate ):                # Checks if the var is empty
+        sensor = dbSensors.query.filter_by(sensorid=currentsensor).first()
         startdate = datetime.strptime(startdate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M') # Formats the startdate
         enddate = datetime.strptime(enddate, '%Y-%m-%d').strftime('%d.%m.%Y %H:%M')     # Formats the enddate
       
-        daten = dbSenData.query.filter_by(sensorid = currentsensor).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate).order_by(dbSenData.timestamp.desc())
-        chartdata = dbSenData.query.filter_by(sensorid = currentsensor).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate)
+        daten = dbSenData.query.filter_by(sendata = sensor).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate).order_by(dbSenData.timestamp.desc())
+        chartdata = dbSenData.query.filter_by(sendata = sensor).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate)
         showchart = True
 
     else:   #When the vars are empty
@@ -194,7 +197,7 @@ def api_savedata():
     if(sensor and sensor.sensorsecret == sen_secret): # When the sensor-id and the secret matches
 
         # It greates an object wich gets sends to the DB
-        sensordata = dbSenData(sensorid=data['sensor_id'], co2=data['co2'],temp=data['temp'], hum=data['hum'], timestamp=data['timestamp'])
+        sensordata = dbSenData(sendata=sensor, co2=data['co2'],temp=data['temp'], hum=data['hum'], timestamp=data['timestamp'])
         
         db.session.add(sensordata)# Sends Obj to the DB
         sensor.lastseen = time.strftime('%H:%M:%S %d.%m.%Y') # Upates the last seen in the Senors DB Table
@@ -223,8 +226,8 @@ def api_exportdata():
         print(sen_id)
         print("Startdate: " + startdate)
         print("Enddate: " + enddate)
-
-        exportdata = dbSenData.query.filter_by(sensorid = sen_id).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate)
+        sensor = dbSensors.query.filter_by(sensorid=sen_id).first()
+        exportdata = dbSenData.query.filter_by(sendata = sensor).filter(dbSenData.timestamp >= startdate).filter(dbSenData.timestamp <= enddate)
 
         with open('./download/_daten.csv', 'w') as f: # Creates a file or opens it
             out = csv.writer(f, delimiter=";")

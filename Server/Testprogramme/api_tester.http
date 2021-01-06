@@ -1,15 +1,13 @@
 ### Sensor Save data
-POST http://localhost:5000/sensors/api/savedata HTTP/1.1
+POST http://localhost:5001/sensors/api/savedata HTTP/1.1
 content-type: application/json
 
 {
-            "sensor_id": "TEKO_BE_2.5",
-            "sensor_secret": "PW12345",
-            "co2": "401ppm",
+            "sensor_id": "TEKO_LU_5.3",
+            "sensor_secret": "PW12345w!",
+            "co2": 401,
             "temp": 26.937,
             "hum": 40,
             "timestamp": "27.06.2020 00:00:03"
 }
 
-### Get All Data
-GET http://localhost:5000/sensors/api/all
