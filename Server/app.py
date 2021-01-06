@@ -163,12 +163,15 @@ def index():                        # Opens template file and sends it to the us
     startdate = request.args.get('startdate')           # Gets the startdate from the URL
     enddate = request.args.get('enddate')               # Gets the enddate from the URL
 
+    showchart = False
+    error = ""
+
     if(currentsensor):
         sensor = dbSensors.query.filter_by(sensorid=currentsensor).first()
         dbdata = dbSenData.query.filter_by(sendata=sensor)
 
-        error = ""
-        showchart = False
+        
+        
 
         try:
 
@@ -211,19 +214,19 @@ def index():                        # Opens template file and sends it to the us
 
 
     
-    return render_template('index.html', daten=daten, chartdata=chartdata, sensors=dbSensors.query.all(), showchart=showchart, error=error)
+    return render_template('index.html', daten=daten, chartdata=chartdata, sensors=dbSensors.query.order_by(dbSensors.sensorid.asc()), showchart=showchart, error=error)
 
 # Handels request for www.air-solutions.ch/sensors
 @app.route('/sensors', methods=['GET'])
 @login_required
 def sensors():
-    return render_template('sensors.html', sensors=dbSensors.query.all())
+    return render_template('sensors.html', sensors=dbSensors.query.order_by(dbSensors.sensorid.asc()))
 
 # Handels request for www.air-solutions.ch/admin
 @app.route('/admin', methods=['GET'])
 @login_required
 def admin():
-    return render_template('admin.html', user=dbUsers.query.all())
+    return render_template('admin.html', user=dbUsers.query.order_by(dbSensors.sensorid.asc()))
 
 # ------------API----------------------
 
@@ -332,11 +335,19 @@ def delSensor():
 
     print(sen_id)
 
-    dbSenData.query.filter_by(sensorid=sen_id).delete() # Delets all data from the table where the SensorID is used 
-    dbSensors.query.filter_by(sensorid=sen_id).delete() # Delets the Senor from the Sensor table in the DB
-    db.session.commit()                                 # Commits the changes to the DB
+    sensor = dbSensors.query.filter_by(sensorid=sen_id).first()
 
-    return redirect(url_for('sensors'))
+    try:
+        dbSenData.query.filter_by(sendata=sensor).delete()  # Delets all data from the table where the SensorID is used 
+        dbSensors.query.filter_by(sensorid=sen_id).delete()                                     # Delets the Senor from the Sensor table in the DB
+        db.session.commit()                                 # Commits the changes to the DB
+        
+        return redirect(url_for('sensors'))
+
+    except Exception:
+
+        error = "Es ist ein unerwarteter Fehler aufgetreten."
+        return redirect(url_for('sensors', error))
 
 
 @app.route('/users/api/adduser', methods=['POST'])
