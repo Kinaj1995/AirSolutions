@@ -3,6 +3,7 @@
 #include <settings.h>
 
 //Sensor Information
+String SERVER = "SOME_STRING";
 String SENSOR_ID = "SOME_STRING";
 String SENSOR_SECRET = "SOME_STRING";
 

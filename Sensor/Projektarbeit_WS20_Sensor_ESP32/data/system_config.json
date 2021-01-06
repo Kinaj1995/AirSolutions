@@ -1,0 +1,8 @@
+{
+    "system-config": {
+        "server": "",
+        "sensor_id": "",
+        "sensor_secret": ""
+    }
+
+}
