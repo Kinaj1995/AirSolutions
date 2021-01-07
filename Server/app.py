@@ -226,7 +226,7 @@ def sensors():
 @app.route('/admin', methods=['GET'])
 @login_required
 def admin():
-    return render_template('admin.html', user=dbUsers.query.order_by(dbSensors.sensorid.asc()))
+    return render_template('admin.html', user=dbUsers.query.order_by(dbUsers.username.asc()))
 
 # ------------API----------------------
 
