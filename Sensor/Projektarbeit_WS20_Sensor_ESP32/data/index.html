@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+
+
+    <title>Air-Solutions Sensor</title>
+</head>
+
+<body>
+
+    <ul class="navbar">
+        <li><a class="active" href="/">Daten</a></li>
+        <li style="float:right"><a href="/">Air-Solutions</a></li>
+    </ul>
+
+
+    <div class="main">
+        <div class="diagramm">
+
+            <div id="chart-temperature" class="container"></div>
+
+
+        </div>
+
+        <div class="werte">
+
+            <h1>%SENSOR_ID%</h1>
+            <hr>
+            <h2>%TIME%</h2>
+            <hr>
+            <h2>eCO2: %AIR_CO2% ppm</h2>
+            <h2>Luftfeuchtigkeit: %AIR_HUM% Prozent</h2>
+            <h2>Temperatur: %AIR_TEMP% °C</h2>
+
+
+
+        </div>
+    </div>
+
+    <script src="/_js/diagramm.js"></script>
+
+
+
+</body>
+
+</html>

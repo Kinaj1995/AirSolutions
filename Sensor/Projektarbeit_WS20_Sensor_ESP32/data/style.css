@@ -1,0 +1,141 @@
+body {
+    background-color: #a69c9c;
+    margin-top: 0%;
+    margin-left: 0%;
+    margin-right: 0%;
+    padding-top: 0%;
+    padding-left: 0%;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+}
+
+div.main {
+    width: 90%;
+    height: auto;
+    display: table;
+    margin: 0 auto;
+    padding-top: 7%;
+    padding-left: 2.5%;
+    padding-right: 2.5%;
+}
+
+div.diagramm {
+    background-color: #5cb8fa;
+    width: 50%;
+    height: auto;
+    padding: 2%;
+    float: left;
+    border-radius: 10px;
+}
+
+div.werte {
+    background-color: #5cb8fa;
+    width: 35%;
+    height: auto;
+    margin-left: 2.5%;
+    padding: 2%;
+    float: left;
+    border-radius: 10px;
+}
+
+div.admin {
+    background-color: #5cb8fa;
+    width: 95%;
+    height: auto;
+    margin: 0 auto;
+    padding: 2%;
+    float: left;
+    border-radius: 10px;
+}
+
+h1 {
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    margin: 0 auto;
+}
+
+h2 {
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    margin: 0 auto;
+}
+
+h3 {
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    margin: 0 auto;
+}
+
+p {
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    margin: 0 auto;
+}
+
+ul.navbar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover:not(.active) {
+    background-color: #111;
+}
+
+.active {
+    background-color: #5cb8fa;
+}
+
+label {
+    padding: 12px 12px 12px 0;
+    display: inline-block;
+}
+
+input[type=time],
+input[type=range] {
+    width: 95%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+label {
+    padding: 12px 12px 12px 0;
+    display: inline-block;
+}
+
+input[type=submit],
+input[type=reset] {
+    background-color: darkblue;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type=submit]:hover {
+    background-color: #45a049;
+}
+
+input[type=reset]:hover {
+    background-color: #d12626;
+}

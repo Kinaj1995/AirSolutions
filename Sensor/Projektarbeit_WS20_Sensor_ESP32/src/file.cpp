@@ -2,7 +2,8 @@
 #include <SPIFFS.h>
 #include <ArduinoJson.h>
 
-#include <Settings.h>
+#include <settings.h>
+#include <file.h>
 
 #define FORMAT_SPIFFS_IF_FAILED true
 

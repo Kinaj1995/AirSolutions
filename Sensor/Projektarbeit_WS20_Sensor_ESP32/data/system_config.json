@@ -2,7 +2,9 @@
     "system-config": {
         "server": "",
         "sensor_id": "",
-        "sensor_secret": ""
+        "sensor_secret": "",
+        "ssid": "",
+        "password":
     }
 
 }
