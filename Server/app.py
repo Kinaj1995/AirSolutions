@@ -404,7 +404,39 @@ def delUser():
             error = "Der Benutzer konnte nicht gelöscht werden."
             
     return redirect(url_for('admin', error=error))
+
+
+@app.route('/users/api/changePassword', methods=['POST'])
+@login_required
+def changePassword():
+
+    data = request.form         # Gets the data from the POST request
+
+    oldPassword = data['oldPassword']
+    newPassword = data['newPassword']
+    newPassword1 = data['newPassword1']
+
+    user = dbUsers.query.filter_by(username=current_user.username).first()   # Searches the user in the Database
+
+    if(user and check_password_hash(user.password, oldPassword)):  # If the user exists and the password hashes matches the user gets loged in.
+        if(newPassword == newPassword1 and password_check(newPassword)):
+
+            try:
+                hash = generate_password_hash(newPassword)
+                user.password = hash
+                db.session.commit()
+
+                return redirect(url_for('index'))
+
+            except Exception:
+
+                error = "Das Passwort konnte nicht geändert werden."
+
+        else:
+            error = "Passwörter stimmen nicht überein oder entspricht nicht den Richtlinien."
     
+    return redirect(url_for('index', error=error))
+          
 
 
 

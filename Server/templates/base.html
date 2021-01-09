@@ -50,21 +50,69 @@
             </ul>
             {% if current_user.is_authenticated %}
 
-
-            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                <span data-feather="user"></span>
-                current_user
-            </button>
-
-            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                <form class="form-inline my-2 my-md-0" action="/logout" method="GET">
-                    <input class="btn btn-info" type="submit" value="Logout">
-                </form>
-                <form class="form-inline my-2 my-md-0" action="/changePW" method="GET">
-                    <input class="btn btn-info" type="submit" value="changePW">
-                </form>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span data-feather="user"></span>
+                    current_user
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/logout">Logout</a>
+                    <button type="button" class="btn btn btn-outline-secondary" data-toggle="modal"
+                        data-target="#changePassword">
+                        Passwort ändern
+                    </button>
+                </div>
             </div>
+
+
+
+            <!--Change Password Popup-->
+            <div class="modal fade" id="changePassword" tabindex="-1" role="dialog"
+                aria-labelledby="changePasswordModal" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Passwort ändern</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/users/api/changePassword" method="POST">
+                                <div class="form-group">
+                                    <label for="password" class="form-label">aktuelles Passwort</label>
+                                    <input type="password" class="form-control" name="oldPassword" id="password"
+                                        placeholder="password">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="password" class="form-label">Neues Passwort</label>
+                                    <input type="password" class="form-control" name="newPassword" id="password">
+                                </div>
+
+                                <p>Das Passwort muss folgenden Standarts gerecht werden:</p>
+                                <li>min. 8 Zeichen / max. 20</li>
+                                <li>min. ein Klein- und Grossbuchstaben</li>
+                                <li>min. eine Zahl</li>
+                                <li>min. ein Sonderzeichen</li>
+
+                                <div class="form-group">
+                                    <label for="password1" class="form-label">Neues Passwort wiederholen</label>
+                                    <input type="password" class="form-control" name="newPassword1" id="password1">
+                                </div>
+                        </div>
+                        <div class="modal-footer">
+
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                            <input type="submit" class="btn btn-info" value="Passwort ändern"></input>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
 
 
             {% else %}
