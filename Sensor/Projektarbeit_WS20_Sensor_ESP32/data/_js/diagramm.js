@@ -3,7 +3,7 @@ var chartT = new Highcharts.Chart({
         renderTo: 'chart-temperature'
     },
     title: {
-        text: 'Water Temperature'
+        text: 'CO2 in der Luft'
     },
     series: [{
         showInLegend: false,
@@ -30,7 +30,7 @@ var chartT = new Highcharts.Chart({
     },
     yAxis: {
         title: {
-            text: 'Temperature (Celsius)'
+            text: 'CO2 (ppm)'
         }
 
     },
@@ -54,6 +54,6 @@ setInterval(function() {
             }
         }
     };
-    xhttp.open("GET", "/temperature", true);
+    xhttp.open("GET", "/sendata", true);
     xhttp.send();
 }, 10000);

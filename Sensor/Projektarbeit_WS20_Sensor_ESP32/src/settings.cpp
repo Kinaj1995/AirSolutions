@@ -12,6 +12,12 @@ String SENSOR_SECRET = "PW12345w!";
 const char* SSID = "NoFreeWiFi";
 const char* PASSWORD = "Fabc471608!";
 
+// OTA Update
+const char* OTANAME = "AirSens";
+const char* OTAPW = "12345";
+
+
+
 // NTP Config
 const char *ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 3600;

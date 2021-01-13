@@ -47,8 +47,8 @@ void setup()
   startNTPClient();
 
   // initialisiert OTA
-  ArduinoOTA.setHostname("AirSens");
-  ArduinoOTA.setPassword("passwort");
+  ArduinoOTA.setHostname(OTANAME);
+  ArduinoOTA.setPassword(OTAPW);
   ArduinoOTA.begin();
 
   
@@ -57,8 +57,9 @@ void setup()
 void loop()
 {
   ArduinoOTA.handle();
+  syncNTPClient();
   
-  delay(60000);
+  delay(5);
 }
 
 void LoopCore0(void *pvParameters)

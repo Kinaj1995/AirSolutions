@@ -7,6 +7,7 @@
 #include <file.h>
 #include <settings.h>
 #include <network.h>
+#include <ntp.h>
 
 String processor(const String &var);
 
@@ -47,7 +48,7 @@ void startWebServer()
     request->send(SPIFFS, "/_js/diagramm.js", "text/javascript");
   });
 
-  server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("/sendata", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send_P(200, "text/plain", String(air_eCO2).c_str());
   });
 
@@ -74,6 +75,10 @@ String processor(const String &var)
   else if (var == "SENSOR_ID")
   {
     return String(SENSOR_ID);
+  }
+    else if (var == "TIME")
+  {
+    return String(stringLocalTimestamp());
   }
   return String();
 }

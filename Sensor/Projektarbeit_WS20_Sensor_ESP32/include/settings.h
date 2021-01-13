@@ -10,6 +10,10 @@ extern String SENSOR_SECRET;
 extern const char* SSID;
 extern const char* PASSWORD;
 
+// OTA Update
+extern const char* OTANAME;
+extern const char* OTAPW;
+
 // NTP
 extern const char *ntpServer;
 extern const long gmtOffset_sec;
