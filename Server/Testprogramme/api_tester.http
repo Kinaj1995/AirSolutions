@@ -11,3 +11,39 @@ content-type: application/json
             "timestamp": "27.06.2020 00:00:03"
 }
 
+
+
+
+### Sensor Save data
+POST http://localhost:5001/sensors/api/savedata HTTP/1.1
+content-type: application/json
+
+{
+"sensor_id": "PARU_HOME",
+"sensor_secret": "PW12345w!",
+  "data": [
+    {
+      "sensor_id": "PARU_HOME",
+      "sensor_secret": "PW12345w!",
+      "co2": 403,
+      "temp": 0,
+      "hum": 0,
+      "timestamp": "13.01.2021 23:51:11"
+    },
+    {
+      "sensor_id": "PARU_HOME",
+      "sensor_secret": "PW12345w!",
+      "co2": 402,
+      "temp": 0,
+      "hum": 0,
+      "timestamp": "13.01.2021 23:51:16"
+    },
+    {
+      "sensor_id": "PARU_HOME",
+      "sensor_secret": "PW12345w!",
+      "co2": 401,
+      "temp": 0,
+      "hum": 0,
+      "timestamp": "13.01.2021 23:51:21"
+    }]
+}
