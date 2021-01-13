@@ -13,7 +13,7 @@ const char* SSID = "NoFreeWiFi";
 const char* PASSWORD = "Fabc471608!";
 
 // OTA Update
-const char* OTANAME = "AirSens";
+const char* OTANAME = "PARU_HOME";
 const char* OTAPW = "12345";
 
 

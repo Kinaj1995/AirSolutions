@@ -57,16 +57,14 @@ void setup()
 void loop()
 {
   ArduinoOTA.handle();
-  syncNTPClient();
   
-  delay(5);
 }
 
 void LoopCore0(void *pvParameters)
 {
   
   String timestamp;
-
+  syncNTPClient(); // Syncs the internal RTC with the NTP Server
   
 
   startVOCSensor(); //initialize the VOC Sensor
@@ -78,6 +76,6 @@ void LoopCore0(void *pvParameters)
 
     loopVOCSensor();
     sendData(timestamp);
-    delay(5000);
+    delay(10000);
   }
 }

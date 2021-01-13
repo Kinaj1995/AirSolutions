@@ -89,7 +89,8 @@ void sendData(String timestamp)
   {
 
     // Prepare JSON document
-    DynamicJsonDocument doc(200);
+    DynamicJsonDocument doc(1000);
+    
     doc["sensor_id"] = SENSOR_ID;
     doc["sensor_secret"] = SENSOR_SECRET;
     doc["co2"] = air_eCO2;
