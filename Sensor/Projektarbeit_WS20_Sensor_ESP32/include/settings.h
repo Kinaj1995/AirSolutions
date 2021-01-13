@@ -5,6 +5,8 @@ extern String SERVER;
 extern String SERVERPORT;
 extern String SENSOR_ID;
 extern String SENSOR_SECRET;
+extern const int saveDataInterval;
+extern const int uploadDataInterval;
 
 //Wifi 
 extern const char* SSID;

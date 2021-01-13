@@ -52,6 +52,10 @@ void startWebServer()
     request->send_P(200, "text/plain", String(air_eCO2).c_str());
   });
 
+  server.on("/sendata.json", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(SPIFFS, "/sendata.json", "text/json");
+  });
+
   server.begin();
   Serial.println("HTTP server started");
 }
@@ -76,48 +80,55 @@ String processor(const String &var)
   {
     return String(SENSOR_ID);
   }
-    else if (var == "TIME")
+  else if (var == "TIME")
   {
     return String(stringLocalTimestamp());
   }
   return String();
 }
 
-void sendData(String timestamp)
+void sendData()
 {
   if (WiFi.status() == WL_CONNECTED)
   {
+    File dataFile = SPIFFS.open("/sendata.json", "r");
+    DynamicJsonDocument doc(4096);
 
-    // Prepare JSON document
-    DynamicJsonDocument doc(1000);
+    if (!dataFile)
+    {
+      Serial.println("No file found");
+      return;
+    }
+    else
+    {
+      deserializeJson(doc, dataFile);
+
+      JsonObject obj = doc.as<JsonObject>();
+      String json;
+      serializeJson(doc, json);
+
+      HTTPClient http;
+
+      http.begin("http://192.168.0.55:5000/sensors/api/savedata");
+      http.addHeader("content-type", "application/json");
+      int httpResponseCode = http.POST(json);
+
+      http.end();
+
+      if(httpResponseCode == 200){
+        Serial.println("Daten wurden vom Server gespeichert.");
+        deleteFile("/sendata.json");
+
+      } else{
+        Serial.println("Daten konnten nicht gesopeichert werden.");
+      }
+
+      return;
+    }
+
     
-    doc["sensor_id"] = SENSOR_ID;
-    doc["sensor_secret"] = SENSOR_SECRET;
-    doc["co2"] = air_eCO2;
-    doc["temp"] = air_temp;
-    doc["hum"] = air_hum;
-    doc["timestamp"] = timestamp;
-
-    String json;
-    serializeJson(doc, json);
-
-    Serial.println(json);
-
-    HTTPClient http;
-
-    
-    http.begin("http://192.168.0.55:5000/sensors/api/savedata");
-    http.addHeader("content-type", "application/json");
-    int httpResponseCode = http.POST(json);
-
-    Serial.print("HTTP Response code: ");
-    Serial.println(httpResponseCode);
-
-    http.end();
-    
+  }else{
+    Serial.println("No Internet");
   }
-  else
-  {
-    Serial.println("Not connected to WLAN!");
-  }
+
 }

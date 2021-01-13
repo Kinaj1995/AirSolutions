@@ -7,6 +7,8 @@ String SERVER = "http://192.168.0.91:5000/sensors/api/savedata";
 String SERVERPORT = "5000";
 String SENSOR_ID = "PARU_HOME";
 String SENSOR_SECRET = "PW12345w!";
+const int saveDataInterval = 30;
+const int uploadDataInterval =  300;
 
 //Wifi
 const char* SSID = "NoFreeWiFi";

@@ -4,4 +4,4 @@ extern void startNetwork();
 extern void startWebServer();
 
 
-extern void sendData(String timestamp);
+extern void sendData();

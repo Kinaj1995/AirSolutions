@@ -14,8 +14,9 @@
 #include <sensor.h>
 #include <ntp.h>
 
-
-
+//--Loopcounter
+int saveloop = 0;
+int uploadloop = uploadDataInterval;
 
 //--Taskhandler
 TaskHandle_t Core0;
@@ -40,8 +41,6 @@ void setup()
 
   loadSPIFFS(); //Initialize the Local Data Structure
 
-
-
   startNetwork();
   startWebServer();
   startNTPClient();
@@ -50,22 +49,18 @@ void setup()
   ArduinoOTA.setHostname(OTANAME);
   ArduinoOTA.setPassword(OTAPW);
   ArduinoOTA.begin();
-
-  
 }
 
 void loop()
 {
   ArduinoOTA.handle();
-  
 }
 
 void LoopCore0(void *pvParameters)
 {
-  
+
   String timestamp;
   syncNTPClient(); // Syncs the internal RTC with the NTP Server
-  
 
   startVOCSensor(); //initialize the VOC Sensor
 
@@ -73,9 +68,28 @@ void LoopCore0(void *pvParameters)
   {
     timestamp = stringLocalTimestamp();
 
-
     loopVOCSensor();
-    sendData(timestamp);
-    delay(10000);
+
+
+
+//--Loop-Checker
+    if (saveloop >= saveDataInterval)
+    {
+      saveData(timestamp);
+      saveloop = 0;
+    }
+
+    if (uploadloop >= uploadDataInterval)
+    {
+      sendData();
+      uploadloop = 0;
+    }
+
+
+//--Loop-Land
+    saveloop++;
+    uploadloop++;
+
+    delay(1000);
   }
 }

@@ -16,6 +16,23 @@ void loadSPIFFS()
     }
 }
 
+void deleteFile(const char *path)
+{
+    Serial.printf("Writing file: %s\r\n", path);
+
+    File delFile = SPIFFS.open("/system_config.json", "r");
+
+    if (!delFile)
+    {
+        Serial.println("File does not exists.");
+    }
+    else
+    {
+        SPIFFS.remove(path);
+        Serial.println("File got deleted.");
+    }
+}
+
 void writeFile(fs::FS &fs, const char *path, const char *message)
 {
     Serial.printf("Writing file: %s\r\n", path);
@@ -86,5 +103,53 @@ void readConfig()
         Serial.println("--Datafile loaded--");
 
         return;
+    }
+}
+
+void saveData(String timestamp)
+{
+
+    File dataFile = SPIFFS.open("/sendata.json", "r");
+    StaticJsonDocument<2048> doc;
+
+    try
+    {
+        deserializeJson(doc, dataFile);
+        doc["sensor_id"] = SENSOR_ID;
+        doc["sensor_secret"] = SENSOR_SECRET;
+
+        JsonObject data = doc["data"].createNestedObject();
+
+        data["co2"] = air_eCO2;
+        data["temp"] = air_temp;
+        data["hum"] = air_hum;
+        data["timestamp"] = timestamp;
+
+        dataFile = SPIFFS.open("/sendata.json", "w");
+        serializeJsonPretty(doc, dataFile);
+
+        dataFile.close();
+    }
+    catch (const std::exception &e)
+    {
+        Serial.println("Fehler");
+
+        deleteFile("/sendata.json");
+        
+        deserializeJson(doc, dataFile);
+        doc["sensor_id"] = SENSOR_ID;
+        doc["sensor_secret"] = SENSOR_SECRET;
+
+        JsonObject data = doc["data"].createNestedObject();
+
+        data["co2"] = air_eCO2;
+        data["temp"] = air_temp;
+        data["hum"] = air_hum;
+        data["timestamp"] = timestamp;
+
+        dataFile = SPIFFS.open("/sendata.json", "w");
+        serializeJsonPretty(doc, dataFile);
+
+        dataFile.close();
     }
 }
