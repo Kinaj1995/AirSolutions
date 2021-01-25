@@ -2,25 +2,8 @@
 
 {% block head %}
 
-<!-- Favicons -->
-<meta name="theme-color" content="#7952b3">
 
 
-<style>
-  .bd-placeholder-img {
-    font-size: 1.125rem;
-    text-anchor: middle;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    user-select: none;
-  }
-
-  @media (min-width: 768px) {
-    .bd-placeholder-img-lg {
-      font-size: 3.5rem;
-    }
-  }
-</style>
 
 {% endblock %}
 
@@ -72,8 +55,10 @@
           <div class="btn-group mr-2">
             <form method="POST" action="/sensors/api/exportdata">
               <input type="hidden" name="sensor_id" id="sensor_id" value="{{ request.args.get('currentsensor') }}">
-              <input type="hidden" class="form-control" name="startdate" id="startdate" value="{{ request.args.get('startdate') }}">
-              <input type="hidden" class="form-control" name="enddate" id="enddate" value="{{ request.args.get('enddate') }}">
+              <input type="hidden" class="form-control" name="startdate" id="startdate"
+                value="{{ request.args.get('startdate') }}">
+              <input type="hidden" class="form-control" name="enddate" id="enddate"
+                value="{{ request.args.get('enddate') }}">
 
               {% if showchart %}<input type="submit" class="btn btn-outline-secondary" value="Exportieren">{% endif %}
             </form>
@@ -97,7 +82,7 @@
 
             </form>
 
-            
+
           </div>
         </div>
       </div>

@@ -15,15 +15,39 @@
         integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
     <!--Icons-->
-    <script src="{{url_for('static', filename='Feather.min.js')}}"></script>
+    <!-- Favicons -->
+    <meta name="theme-color" content="#7952b3">
+    <script src="{{url_for('static', filename='feather.min.js')}}"></script>
+    <!--<script src="https://unpkg.com/feather-icons"></script>-->
+
+    <style>
+        .example::-webkit-scrollbar {
+            display: none;
+        }
+
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+
 
     {% block head %} {% endblock %}
 </head>
 
-<body>
+<body class="example">
 
     <!--Navbar-->
-    <nav class="navbar navbar-expand navbar-dark bg-dark">
+    <nav class="navbar navbar-expand navbar-dark bg-dark ">
         <a class="navbar-brand" href="/">
             <img src="{{url_for('static', filename='Logo_trans.png')}}" width="40" height="40" />
         </a>
