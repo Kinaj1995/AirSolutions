@@ -103,7 +103,6 @@ void sendData()
     {
       deserializeJson(doc, dataFile);
 
-      JsonObject obj = doc.as<JsonObject>();
       String json;
       serializeJson(doc, json);
 

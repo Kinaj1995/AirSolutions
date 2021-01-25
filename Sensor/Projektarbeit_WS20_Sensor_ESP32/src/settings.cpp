@@ -26,7 +26,13 @@ const long gmtOffset_sec = 3600;
 const int daylightOffset_sec = 3600;
 const int ntpSyncInterval = 17280; //Once a Day (Default: 17'280)
 
+// Serial Output
+boolean enableSerial = false;
 
+//LED Pins
+const int led_green = 15;
+const int led_blue = 2;
+const int led_red = 4;
 
 //Global Vars
 int air_eCO2;

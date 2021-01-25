@@ -22,6 +22,13 @@ extern const long gmtOffset_sec;
 extern const int daylightOffset_sec;
 extern const int ntpSyncInterval;
 
+// Serial Output
+extern boolean enableSerial;
+
+//LED Pins
+extern const int led_green;
+extern const int led_blue;
+extern const int led_red;
 
 //Global Vars
 extern int air_eCO2;
