@@ -124,6 +124,9 @@ void saveData(String timestamp)
         data["temp"] = air_temp;
         data["hum"] = air_hum;
         data["timestamp"] = timestamp;
+        data["tvoc"] = air_tvoc;
+        data["h2"] = air_h2;
+        data["ethanol"] = air_e;
 
         dataFile = SPIFFS.open("/sendata.json", "w");
         serializeJsonPretty(doc, dataFile);
@@ -146,6 +149,9 @@ void saveData(String timestamp)
         data["temp"] = air_temp;
         data["hum"] = air_hum;
         data["timestamp"] = timestamp;
+        data["tvoc"] = air_tvoc;
+        data["h2"] = air_h2;
+        data["ethanol"] = air_e;
 
         dataFile = SPIFFS.open("/sendata.json", "w");
         serializeJsonPretty(doc, dataFile);

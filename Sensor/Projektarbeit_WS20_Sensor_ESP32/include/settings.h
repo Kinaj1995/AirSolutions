@@ -25,5 +25,8 @@ extern const int ntpSyncInterval;
 
 //Global Vars
 extern int air_eCO2;
+extern int air_tvoc;
 extern int air_hum;
+extern int air_h2;
+extern int air_e;
 extern float air_temp;

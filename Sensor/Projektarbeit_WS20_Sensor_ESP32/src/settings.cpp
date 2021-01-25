@@ -30,5 +30,8 @@ const int ntpSyncInterval = 17280; //Once a Day (Default: 17'280)
 
 //Global Vars
 int air_eCO2;
+int air_tvoc;
 int air_hum;
+int air_h2;
+int air_e;
 float air_temp;

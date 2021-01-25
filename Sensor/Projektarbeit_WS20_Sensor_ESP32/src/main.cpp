@@ -62,13 +62,13 @@ void LoopCore0(void *pvParameters)
   String timestamp;
   syncNTPClient(); // Syncs the internal RTC with the NTP Server
 
-  startVOCSensor(); //initialize the VOC Sensor
+  startSensor(); //initialize the VOC Sensor
 
   for (;;)
   {
     timestamp = stringLocalTimestamp();
 
-    loopVOCSensor();
+    loopSensor();
 
 
 
