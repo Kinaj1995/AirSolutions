@@ -60,7 +60,7 @@
                         <td>{{ x.lastseen }}</td>
                         <td>
                             <button type="button" class="btn btn-outline-danger" data-toggle="modal"
-                                data-target="#deleteSensor" data-sensorid="{{ x.sensorid }}">
+                                data-target="#deleteSensor" sensorid="{{ x.sensorid }}">
                                 Löschen
                             </button>
                         </td>
@@ -153,12 +153,14 @@
 
 
 {% block afterscript %}
+
 <script>
 
     // 
     $('#deleteSensor').on('show.bs.modal', function (event) {
         var button = event.relatedTarget // Gets the button who opens the modal
-        var recipient = button.getAttribute('data-sensorid') // Extracts the data from the specific button
+        var recipient = button.getAttribute('sensorid') // Extracts the data from the specific button
+        console.log(recipient)
         document.getElementById('sensor_id_hidden').setAttribute('value',recipient) // Sets the hidden field to the correct Sensor ID
 
     });

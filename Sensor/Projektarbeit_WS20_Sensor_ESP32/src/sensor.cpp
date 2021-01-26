@@ -1,19 +1,19 @@
 #include <Wire.h>
 #include <Adafruit_SGP30.h>
+#include <Adafruit_AM2320.h>
 
 #include <settings.h>
 
 //--init VOC Sensor
 unsigned int eco2;
 unsigned int tvoc;
-
-unsigned long entryLoop, entryPublish;
+int hum;
+float temp;
 
 Adafruit_SGP30 sgp;
+Adafruit_AM2320 am2320 = Adafruit_AM2320();
 
-
-
-void startVOCSensor()
+void startSensor()
 {
     if (!sgp.begin())
     {
@@ -35,30 +35,36 @@ void startVOCSensor()
         }
         Serial.print(".");
         eco2 = sgp.eCO2;
-        
+
     } while (eco2 == 400);
-    entryLoop = millis();
+
+    am2320.begin(); //Startet den AM2320 Sensor
+
+    
 }
 
-void loopVOCSensor()
+
+
+void loopSensor()
 {
-    
+
     while (!sgp.IAQmeasure())
     {
         Serial.print(".");
         delay(100);
     }
 
-    tvoc = ((19 * tvoc) + sgp.TVOC) / 20;
-    Serial.print("TVOC(ppb):");
-    Serial.print(tvoc);
+    air_eCO2 = ((19 * air_eCO2) + sgp.eCO2) / 20;
+    air_tvoc = ((19 * air_tvoc) + sgp.TVOC) / 20;
+    air_h2 = sgp.rawH2;
+    air_e = sgp.rawEthanol;    
 
-    eco2 = ((19 * eco2) + sgp.eCO2) / 20;
-    Serial.print(" eco2(ppm):");
-    Serial.println(eco2);
-
-    air_eCO2 = eco2;
+    air_temp = ((19 * air_temp) + am2320.readTemperature()) / 20;
+    air_hum = ((19 * air_hum ) + am2320.readHumidity()) / 20;
 
 
-    
 }
+
+
+
+

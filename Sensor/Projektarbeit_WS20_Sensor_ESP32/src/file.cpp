@@ -54,58 +54,6 @@ void writeFile(fs::FS &fs, const char *path, const char *message)
     file.close();
 }
 
-void saveConfig(String server, String sensor_id, String sensor_secret)
-{
-    StaticJsonDocument<100> doc;
-    doc = doc["system-config"];
-    doc["system-config"]["server"] = server;
-    doc["system-config"]["sensor_id"] = sensor_id;
-    doc["system-config"]["sensor_secret"] = sensor_secret;
-
-    File configFile = SPIFFS.open("/system_config.json", "r");
-    if (!configFile)
-    {
-        Serial.println("Creating new file");
-        writeFile(SPIFFS, "/system_config.json", "");
-    }
-    configFile = SPIFFS.open("/system_config.json", "w");
-    serializeJsonPretty(doc, configFile);
-    configFile.close();
-
-    return;
-}
-
-void readConfig()
-{
-    File configfile = SPIFFS.open("/system_config.json", "r");
-    StaticJsonDocument<100> doc;
-
-    if (!configfile)
-    {
-        Serial.println("!No Data file Found! \n!Using basic settings!");
-        return;
-    }
-    else
-    {
-        deserializeJson(doc, configfile);
-        //serializeJsonPretty(doc, Serial);
-
-        JsonObject obj = doc.as<JsonObject>();
-
-        String server = obj["system-config"]["server"];
-        String sensor_id = obj["system-config"]["sensor_id"];
-        String sensor_secret = obj["system-config"]["sensor_secret"];
-
-        SERVER = server;
-        SENSOR_ID = sensor_id;
-        SENSOR_SECRET = sensor_secret;
-
-        Serial.println("--Datafile loaded--");
-
-        return;
-    }
-}
-
 void saveData(String timestamp)
 {
 
@@ -124,15 +72,19 @@ void saveData(String timestamp)
         data["temp"] = air_temp;
         data["hum"] = air_hum;
         data["timestamp"] = timestamp;
+        data["tvoc"] = air_tvoc;
+        data["h2"] = air_h2;
+        data["ethanol"] = air_e;
 
         dataFile = SPIFFS.open("/sendata.json", "w");
         serializeJsonPretty(doc, dataFile);
 
         dataFile.close();
+        Serial.println("Data got stored");
     }
     catch (const std::exception &e)
     {
-        Serial.println("Fehler");
+        Serial.println("Creating JSON File");
 
         deleteFile("/sendata.json");
         
@@ -146,6 +98,9 @@ void saveData(String timestamp)
         data["temp"] = air_temp;
         data["hum"] = air_hum;
         data["timestamp"] = timestamp;
+        data["tvoc"] = air_tvoc;
+        data["h2"] = air_h2;
+        data["ethanol"] = air_e;
 
         dataFile = SPIFFS.open("/sendata.json", "w");
         serializeJsonPretty(doc, dataFile);

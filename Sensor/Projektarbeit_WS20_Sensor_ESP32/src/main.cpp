@@ -13,6 +13,10 @@
 #include <network.h>
 #include <sensor.h>
 #include <ntp.h>
+#include <Led.h>
+
+//--Init LED
+Led led(led_red,led_green,led_blue); // Red, Green, Blue LED Pins
 
 //--Loopcounter
 int saveloop = 0;
@@ -49,6 +53,11 @@ void setup()
   ArduinoOTA.setHostname(OTANAME);
   ArduinoOTA.setPassword(OTAPW);
   ArduinoOTA.begin();
+
+  led.startup(10); // Startup with 10 Flashes
+
+
+
 }
 
 void loop()
@@ -62,17 +71,36 @@ void LoopCore0(void *pvParameters)
   String timestamp;
   syncNTPClient(); // Syncs the internal RTC with the NTP Server
 
-  startVOCSensor(); //initialize the VOC Sensor
+  startSensor(); //initialize the VOC Sensor
 
   for (;;)
   {
     timestamp = stringLocalTimestamp();
 
-    loopVOCSensor();
+    loopSensor();
 
 
 
-//--Loop-Checker
+    //--LED-Output
+
+    led.displayval(air_eCO2);
+
+    //--Serial-Output
+
+    if (enableSerial)
+    {
+      Serial.println("-----Sensor-Data-----");
+      Serial.println(timestamp);
+      Serial.printf("Temp: %s °C \n", String(air_temp));
+      Serial.printf("Hum; %d %% \n", air_hum);
+      Serial.printf("eCO2: %d ppm \n", air_eCO2);
+      Serial.printf("TVOC: %d \n", air_tvoc);
+      Serial.printf("H2: %d \n", air_h2);
+      Serial.printf("Ethanol: %d \n", air_e);
+      Serial.println("---------------------");
+    }
+
+    //--Loop-Checker
     if (saveloop >= saveDataInterval)
     {
       saveData(timestamp);
@@ -85,8 +113,7 @@ void LoopCore0(void *pvParameters)
       uploadloop = 0;
     }
 
-
-//--Loop-Land
+    //--Loop-Land
     saveloop++;
     uploadloop++;
 

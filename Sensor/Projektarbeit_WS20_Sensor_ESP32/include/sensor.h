@@ -1,4 +1,4 @@
 
 
-extern void startVOCSensor();
-extern void loopVOCSensor();
+extern void startSensor();
+extern void loopSensor();
