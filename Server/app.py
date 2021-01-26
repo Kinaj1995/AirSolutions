@@ -474,4 +474,4 @@ def page_not_found(e):
 
 # --Starts the Server
 if(__name__ == "__main__"):
-    app.run(debug=True)  # Server startparameter
+   app.run(debug=True)  # Server startparameter
