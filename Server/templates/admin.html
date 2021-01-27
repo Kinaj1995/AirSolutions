@@ -83,12 +83,20 @@
                         <label for="password" class="form-label">Passwort</label>
                         <input type="password" class="form-control" name="password" id="password">
                     </div>
-
-                    <p>Das Passwort muss folgenden Standarts gerecht werden:</p>
-                    <li>min. 8 Zeichen / max. 20</li>
-                    <li>min. ein Klein- und Grossbuchstaben</li>
-                    <li>min. eine Zahl</li>
-                    <li>min. ein Sonderzeichen</li>
+          
+                      <p>
+                        <button class="btn btn-secondary btn-sm" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                          Kennwort-Richtlinien
+                        </button>
+                      </p>
+                      <div class="collapse" id="collapseExample">
+                        <div class="card card-body">
+                            min. 8 Zeichen / max. 20 <br />
+                            min. ein Klein- und Grossbuchstaben <br />
+                            min. eine Zahl <br />
+                            min. ein Sonderzeichen                        
+                        </div>
+                      </div>
 
                     <div class="form-group">
                         <label for="password1" class="form-label">Passwort wiederholen</label>

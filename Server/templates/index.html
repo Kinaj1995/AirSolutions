@@ -68,7 +68,7 @@
             <span data-feather="calendar"></span>
             Datums Filter
           </button>
-          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop1">
             <form method="GET">
               <div class="form-group">
                 <input type="date" class="form-control" name="startdate" id="startdate">
@@ -78,7 +78,7 @@
               </div>
               <input type="hidden" name="currentsensor" id="currentsensor"
                 value="{{ request.args.get('currentsensor') }}">
-              <input type="submit" class="btn btn-primary" value="Filter anwenden">
+              <input type="submit" class="form-control" value="Filter anwenden">
 
             </form>
 
@@ -88,7 +88,7 @@
       </div>
 
       {% if showchart == True %}
-      <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+      <canvas class="my-4 w-100" id="myChart" width="1200" height="380"></canvas>
       {% endif %}
 
       <h2>Messungen</h2>
@@ -151,7 +151,7 @@
     fill: false,
     backgroundColor: 'transparent',
     borderColor: '#019dad',
-    borderWidth: 4,
+    borderWidth: 3,
     pointBackgroundColor: '#019dad',
     data: [
       {% for x in chartdata %}
@@ -163,7 +163,7 @@
       fill: false,
         backgroundColor: 'transparent',
           borderColor: '#FF2D00',
-            borderWidth: 4,
+            borderWidth: 3,
               pointBackgroundColor: '#FF2D00',
                 data: [
                   {% for x in chartdata %}
@@ -175,7 +175,7 @@
       fill: false,
         backgroundColor: 'transparent',
           borderColor: '#000000',
-            borderWidth: 4,
+            borderWidth: 3,
               pointBackgroundColor: '#000000',
                 data: [
                   {% for x in chartdata %}
