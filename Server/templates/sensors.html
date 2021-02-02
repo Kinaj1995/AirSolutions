@@ -44,7 +44,7 @@
                         <th>Sensor ID</th>
                         <th>Standort</th>
                         <th>Beschreibung</th>
-                        <!--<th>Sensor Secret</th>-->
+                        <th>Sensor Secret</th>
                         <th>Letzter Kontakt</th>
                         <th>Bearbeiten</th>
 
@@ -56,7 +56,7 @@
                         <td>{{ x.sensorid }}</td>
                         <td>{{ x.location }}</td>
                         <td>{{ x.description}}</td>
-                        <!--<td>{{ x.sensorsecret }}</td>-->
+                        <td>{{ x.sensorsecret }}</td>
                         <td>{{ x.lastseen|strftime }}</td>
                         <td>
                             <button type="button" class="btn btn-outline-danger" data-toggle="modal"
@@ -176,9 +176,11 @@
         var button = event.relatedTarget // Gets the button who opens the modal
         var recipient = button.getAttribute('sensorid') // Extracts the data from the specific button
         console.log(recipient)
-        document.getElementById('sensor_id_hidden').setAttribute('value',recipient) // Sets the hidden field to the correct Sensor ID
+        document.getElementById('sensor_id_hidden').setAttribute('value', recipient) // Sets the hidden field to the correct Sensor ID
 
     });
+
+
 </script>
 
 {% endblock %}
