@@ -13,6 +13,8 @@ String processor(const String &var);
 
 AsyncWebServer server(80); //Webserver Port
 
+
+//starts the webserver
 void startNetwork()
 {
   WiFi.mode(WIFI_STA);
@@ -33,6 +35,7 @@ void startNetwork()
   Serial.println(WiFi.localIP());
 }
 
+//handels webserver request
 void startWebServer()
 {
 
@@ -60,10 +63,10 @@ void startWebServer()
   Serial.println("HTTP server started");
 }
 
+
+//Replaces Var in HTML file with sensor values
 String processor(const String &var)
 {
-  //Serial.println(var);
-
   if (var == "AIR_CO2")
   {
     return String(air_eCO2);
@@ -87,6 +90,7 @@ String processor(const String &var)
   return String();
 }
 
+//sends the json file to the server
 void sendData()
 {
   if (WiFi.status() == WL_CONNECTED)

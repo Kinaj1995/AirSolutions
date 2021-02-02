@@ -1,8 +1,3 @@
-/**
- * WiFiManager advanced demo, contains advanced configurartion options
- * Implements TRIGGEN_PIN button press, press for ondemand configportal, hold for 3 seconds for reset settings.
- */
-
 //--Libaries
 #include <Arduino.h>
 #include <ArduinoOTA.h>
@@ -45,9 +40,9 @@ void setup()
 
   loadSPIFFS(); //Initialize the Local Data Structure
 
-  startNetwork();
-  startWebServer();
-  startNTPClient();
+  startNetwork();   //Starts the WLAN Connection
+  startWebServer(); //Starts the WebServer
+  startNTPClient(); //Starts the NTP Client to sync Time
 
   // initialisiert OTA
   ArduinoOTA.setHostname(OTANAME);
@@ -62,7 +57,7 @@ void setup()
 
 void loop()
 {
-  ArduinoOTA.handle();
+  ArduinoOTA.handle(); //Handles over the air update
 }
 
 void LoopCore0(void *pvParameters)
@@ -71,13 +66,13 @@ void LoopCore0(void *pvParameters)
   String timestamp;
   syncNTPClient(); // Syncs the internal RTC with the NTP Server
 
-  startSensor(); //initialize the VOC Sensor
+  startSensor(); //initialize the Sensors
 
   for (;;)
   {
-    timestamp = stringLocalTimestamp();
+    timestamp = stringLocalTimestamp(); // gets local time from RTC
 
-    loopSensor();
+    loopSensor(); // gets sensor values
 
 
 

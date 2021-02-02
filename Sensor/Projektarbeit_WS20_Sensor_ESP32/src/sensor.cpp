@@ -44,7 +44,7 @@ void startSensor()
 }
 
 
-
+// gets all data from the sensors
 void loopSensor()
 {
 
