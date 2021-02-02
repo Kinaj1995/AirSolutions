@@ -42,7 +42,7 @@ for m in range(13):
                     data["co2"] = random.randrange(400,1000)
                     data["temp"] = random.randrange(5,40)
                     data["hum"] = random.randrange(5,100)
-                    data["timestamp"] = day + "." + month + ".2018 " + hour + ":00:00"
+                    data["timestamp"] = day + "." + month + ".2020 " + hour + ":00:00"
                     
                     payload = json.dumps(data)
                     print(json.dumps(data))

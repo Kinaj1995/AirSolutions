@@ -1,6 +1,7 @@
 
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
+import uuid
 from flask_login import LoginManager, UserMixin, current_user, login_user, login_required, logout_user
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -102,13 +103,14 @@ class dbSensors(db.Model):
 
 
 class dbSenData(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    sensorid = db.Column(db.Integer, db.ForeignKey(
-        'db_sensors.id'), nullable=False)
+    id = db.Column(db.Text(length=36), default=lambda: str(uuid.uuid4()), primary_key=True)
+    sensorid = db.Column(db.Integer, db.ForeignKey('db_sensors.id'), nullable=False)
     co2 = db.Column(db.Integer)
     temp = db.Column(db.Integer)
     hum = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, nullable=False)
+
+    
 
 
 # ------------Login---------------------------
