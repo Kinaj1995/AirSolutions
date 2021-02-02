@@ -94,10 +94,10 @@ class dbUsers(UserMixin, db.Model):
 
 class dbSensors(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    sensorid = db.Column(db.String(10), nullable=False)
+    sensorid = db.Column(db.String(10), nullable=False, unique=True)
     sensorsecret = db.Column(db.String(10), nullable=False)
     sensordata = db.relationship('dbSenData', backref='sendata', lazy=True)
-    lastseen = db.Column(db.String(20))
+    lastseen = db.Column(db.DateTime, nullable=False)
     location = db.Column(db.String(50))
     description = db.Column(db.Text)
 
@@ -222,8 +222,6 @@ def index():                        # Opens template file and sends it to the us
     return render_template('index.html', daten=daten, chartdata=chartdata, sensors=dbSensors.query.order_by(dbSensors.sensorid.asc()), showchart=showchart, error=error)
 
 # Handels request for www.air-solutions.ch/sensors
-
-
 @app.route('/sensors', methods=['GET'])
 @login_required
 def sensors():
@@ -262,7 +260,7 @@ def api_savedata():
 
             db.session.add(sensordata)  # Sends Obj to the DB
             # Upates the last seen in the Senors DB Table
-            sensor.lastseen = time.strftime('%d-%m-%Y %H:%M:%S')
+            sensor.lastseen = datetime.now()
 
         db.session.commit()  # Saves changes to DB
 
@@ -322,7 +320,7 @@ def addSensor():
     sen_location = data['location']
     sen_description = data['description']
 
-    savetime = "Erfasst: " + time.strftime('%H:%M %d.%m.%Y')
+    savetime = datetime.now()
 
     if(name_check(sen_id) and password_check(sen_secret)):
 

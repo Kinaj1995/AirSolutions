@@ -57,7 +57,7 @@
                         <td>{{ x.location }}</td>
                         <td>{{ x.description}}</td>
                         <!--<td>{{ x.sensorsecret }}</td>-->
-                        <td>{{ x.lastseen }}</td>
+                        <td>{{ x.lastseen|strftime }}</td>
                         <td>
                             <button type="button" class="btn btn-outline-danger" data-toggle="modal"
                                 data-target="#deleteSensor" sensorid="{{ x.sensorid }}">
