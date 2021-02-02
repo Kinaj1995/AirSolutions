@@ -3,7 +3,7 @@
 #include <settings.h>
 
 //Sensor Information
-String SERVER = "http://192.168.0.91:5000/sensors/api/savedata";
+String SERVER = "https://as.puchtuning.synology.me/sensors/api/savedata";
 String SERVERPORT = "5000";
 String SENSOR_ID = "PARU_HOME";
 String SENSOR_SECRET = "PW12345w!";
