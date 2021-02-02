@@ -90,6 +90,9 @@ class dbUsers(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.Text, nullable=False)
+    name = db.Column(db.String(64))
+    prename = db.Column(db.String(64))
+    email = db.Column(db.String(64))
 
 
 class dbSensors(db.Model):
@@ -378,13 +381,16 @@ def addUser():
     username = data['username']
     password = data['password']
     password1 = data['password1']
+    prename = data['prename']
+    name = data['name']
+    email = data['email']
 
     if(password == password1 and name_check(username) and password_check(password)):
 
         try:
             hash = generate_password_hash(password)
 
-            user = dbUsers(username=username, password=hash)
+            user = dbUsers(username=username, password=hash, prename=prename, name=name, email=email)
 
             db.session.add(user)
             db.session.commit()
