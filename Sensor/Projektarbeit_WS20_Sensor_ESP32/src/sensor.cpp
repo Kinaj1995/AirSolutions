@@ -59,8 +59,8 @@ void loopSensor()
     air_h2 = sgp.rawH2;
     air_e = sgp.rawEthanol;    
 
-    air_temp = ((19 * air_temp) + am2320.readTemperature()) / 20;
-    air_hum = ((19 * air_hum ) + am2320.readHumidity()) / 20;
+    air_temp = am2320.readTemperature();
+    air_hum = am2320.readHumidity();
 
 
 }
