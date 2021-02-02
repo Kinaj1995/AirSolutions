@@ -184,8 +184,7 @@ def index():                        # Opens template file and sends it to the us
                 daten = dbdata.order_by(dbSenData.timestamp.desc()).limit(
                     1000)  # Selects just the wanted Sensordata, max 1000 entires
                 # Selects just the wanted Sensordata, max 30 entires for the chart
-                chartdata = dbdata.order_by(
-                    dbSenData.timestamp.asc()).limit(30)
+                chartdata = dbdata.order_by(dbSenData.timestamp.desc()).limit(40)[::-1]
                 showchart = True
 
             elif(startdate and enddate):             # Checks if the var is empty

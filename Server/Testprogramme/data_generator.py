@@ -10,7 +10,7 @@ headers = {
     }
 
 
-data = '{"sensor_id": "TEKO_LU_5.5","sensor_secret": "PW12345w!","co2": 401,"temp": 26.937,"hum": 40,"timestamp": "27.06.2020 00:00:03"}'
+data = '{"sensor_id": "TEKO_LU_5.3","sensor_secret": "PW12345w!", "data": [ {"co2": 401,"temp": 26.937,"hum": 40,"timestamp": "27.06.2020 00:00:03"}]}'
 
 data = json.loads(data)
 
@@ -39,16 +39,20 @@ for m in range(13):
                         hour = str(x)
 
 
-                    data["co2"] = random.randrange(400,1000)
-                    data["temp"] = random.randrange(5,40)
-                    data["hum"] = random.randrange(5,100)
-                    data["timestamp"] = day + "." + month + ".2020 " + hour + ":00:00"
+                    data["data"][0]["co2"] = random.randrange(400,1000)
+                    data["data"][0]["temp"] = random.randrange(5,40)
+                    data["data"][0]["hum"] = random.randrange(5,100)
+                    data["data"][0]["timestamp"] = day + "." + month + ".2020 " + hour + ":00:00"
+                    
+
                     
                     payload = json.dumps(data)
                     print(json.dumps(data))
 
+                    
                     response = requests.request("POST", url, data=payload, headers=headers)
                     print(response.text)
+                    
 
 
 

@@ -97,8 +97,8 @@
           <thead>
             <tr>
               <th>Zeitpunkt der Messung</th>
-              <th>Sensor-ID</th>
-              <th>CO2-Wert</th>
+              {% if not showchart  %} <th>Sensor-ID</th> {% endif %}
+              <th>CO2-Wert</th> 
               <th>Luftfeuchtigkeit</th>
               <th>Temperatur</th>
 
@@ -108,7 +108,7 @@
             {% for x in daten %}
             <tr>
               <td>{{ x.timestamp|strftime }}</td>
-              <td>{{ x.sendata.sensorid }}</td>
+              {% if not showchart %} <td>{{ x.sendata.sensorid }}</td> {% endif %}
               <td>{{ x.co2}} ppm</td>
               <td>{{ x.hum }} %</td>
               <td>{{ x.temp }} °C</td>
