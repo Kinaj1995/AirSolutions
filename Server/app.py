@@ -460,9 +460,9 @@ def changePassword():
 
                 return redirect(url_for('index'))
 
-            except Exception e:
+            except Exception:
 
-                error = "Das Passwort konnte nicht geändert werden." + e
+                error = "Das Passwort konnte nicht geändert werden."
 
         else:
             error = "Passwörter stimmen nicht überein oder entspricht nicht den Richtlinien."
