@@ -52,6 +52,14 @@ Werkzeug==1.0.1
 ```
 
 ## DB
+
+Master PW:  3qEL8D$ZIn&m
+
+DB-Name:    db-air-sol
+
+Username: as-user
+PW:       pH54eESyuQWt
+
 ### Generate DB
 
 ```python
@@ -97,5 +105,38 @@ sendata = dbSenData.query.all()
 print(sendata[0].sensorid)
 print(sendata[0].co2)
 
+```
+
+
+## DB Install
+
+Installiere DB Server + Hilfsprogramme
+``` bash
+sudo apt install postgresql postgresql-contrib
+
+```
+
+Wechsel zum PG User und Öffne das Management Programm
+``` bash
+sudo -i -u postgres
+
+psql
+
+```
+
+
+Beenden des Management Programmes
+```bash
+\q
+```
+
+User erstellen
+```bash
+createuser --interactive
+```
+
+DB erstellen
+```bash
+createdb DBNAME
 ```
 

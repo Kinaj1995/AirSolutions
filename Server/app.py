@@ -81,8 +81,8 @@ def _jinja2_filter_datetime(date, fmt=None):
 
 
 # ------------DB Models-----------------------
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/db.db'  # Testing DB
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/db.db'   #PostgreSQL Server
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/db.db'  # Testing DB
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/db-air-sol'   #PostgreSQL Server
 db = SQLAlchemy(app)
 
 
@@ -479,4 +479,4 @@ def page_not_found(e):
 
 # --Starts the Server
 if(__name__ == "__main__"):
-   app.run(debug=True)  # Server startparameter
+   app.run(debug=False, host="0.0.0.0")  # Server startparameter
