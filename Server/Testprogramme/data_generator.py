@@ -2,7 +2,7 @@ import requests
 import random
 import json
 
-url = "http://localhost:5000/sensors/api/savedata"
+url = "https://as.puchtuning.synology.me/sensors/api/savedata"
 
 headers = {
     'user-agent': "vscode-restclient",
@@ -10,7 +10,7 @@ headers = {
     }
 
 
-data = '{"sensor_id": "TEKO_LU_5.5","sensor_secret": "PW12345w!", "data": [ {"co2": 401,"temp": 26.937,"hum": 40,"timestamp": "27.06.2020 00:00:03"}]}'
+data = '{"sensor_id": "TK_LU_5.5","sensor_secret": "PW12345w!", "data": [ {"co2": 401,"temp": 26.937,"hum": 40,"timestamp": "27.06.2020 00:00:03"}]}'
 
 data = json.loads(data)
 

@@ -1,6 +1,8 @@
 
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
 import uuid
 from flask_login import LoginManager, UserMixin, current_user, login_user, login_required, logout_user
 
@@ -82,8 +84,10 @@ def _jinja2_filter_datetime(date, fmt=None):
 
 # ------------DB Models-----------------------
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/db.db'  # Testing DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/db-air-sol'   #PostgreSQL Server
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://as-user:pH54eESyuQWt@localhost:5432/db-air-sol'   #PostgreSQL Server
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
 
 
 class dbUsers(UserMixin, db.Model):
@@ -97,16 +101,16 @@ class dbUsers(UserMixin, db.Model):
 
 class dbSensors(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    sensorid = db.Column(db.String(10), nullable=False, unique=True)
-    sensorsecret = db.Column(db.String(10), nullable=False)
+    sensorid = db.Column(db.String(20), nullable=False, unique=True)
+    sensorsecret = db.Column(db.String(20), nullable=False)
     sensordata = db.relationship('dbSenData', backref='sendata', lazy=True)
     lastseen = db.Column(db.DateTime, nullable=False)
     location = db.Column(db.String(50))
-    description = db.Column(db.Text)
+    description = db.Column(db.String(100))
 
 
 class dbSenData(db.Model):
-    id = db.Column(db.Text(length=36), default=lambda: str(uuid.uuid4()), primary_key=True)
+    id = db.Column(db.String(40), default=lambda: str(uuid.uuid4()), primary_key=True)
     sensorid = db.Column(db.Integer, db.ForeignKey('db_sensors.id'), nullable=False)
     co2 = db.Column(db.Integer)
     temp = db.Column(db.Integer)
@@ -456,9 +460,9 @@ def changePassword():
 
                 return redirect(url_for('index'))
 
-            except Exception:
+            except Exception e:
 
-                error = "Das Passwort konnte nicht geändert werden."
+                error = "Das Passwort konnte nicht geändert werden." + e
 
         else:
             error = "Passwörter stimmen nicht überein oder entspricht nicht den Richtlinien."
