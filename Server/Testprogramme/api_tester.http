@@ -15,7 +15,7 @@ content-type: application/json
 
 
 ### Sensor Save data
-POST http://localhost:5001/sensors/api/savedata HTTP/1.1
+POST https://as.puchtuning.synology.me/sensors/api/savedata HTTP/1.1
 content-type: application/json
 
 {
@@ -23,11 +23,15 @@ content-type: application/json
 "sensor_secret": "PW12345w!",
   "data": [
     {
-      "sensor_id": "PARU_HOME",
-      "sensor_secret": "PW12345w!",
-      "co2": 403,
-      "temp": 0,
-      "hum": 0,
-      "timestamp": "13.01.2021 23:51:11"
+      "co2": 426,
+      "temp": 25,
+      "hum": 40,
+      "timestamp": "13.01.2021 23:00:00"
+    },
+    {
+      "co2": 4430,
+      "temp": 25,
+      "hum": 41,
+      "timestamp": "13.01.2021 23:01:00"
     }]
 }
