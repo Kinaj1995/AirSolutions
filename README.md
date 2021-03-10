@@ -1,9 +1,13 @@
 # Semesterarbeit WS20 Air-Solution
 
+Author: Janik Schilter, Pascal Rusca
+Changed at: 28.02.2021
+
+
 
 
 # Sensor
-Programmiert in: 	Visual Studio Code
+Programmed in: 	Visual Studio Code
 Extension:			PlattformIO
 
 ## Sendata 
@@ -12,12 +16,21 @@ Endpoint:   "yoururl"/sensors/api/savedata
 Method:     POST
 ```json
 {
-    "sensor_id": "TEKO_BE_2.5",
-    "sensor_secret": "PW12345",
-    "co2": "400ppm",
-    "temp": 26.937,
-    "hum": 40,
-    "timestamp": "27.06.2020 00:00:03"
+"sensor_id": "PARU_HOME",
+"sensor_secret": "EinEmachtnoch1angekeinCordonBleu",
+  "data": [
+    {
+      "co2": 426,
+      "temp": 25,
+      "hum": 40,
+      "timestamp": "13.01.2021 23:00:00"
+    },
+    {
+      "co2": 4430,
+      "temp": 25,
+      "hum": 41,
+      "timestamp": "13.01.2021 23:01:00"
+    }]
 }
 ```
 
@@ -26,14 +39,9 @@ Method:     POST
 
 # Server
 
-Programmiert in: 	Visual Studio Code
-
+Programmed in: 	Visual Studio Code
 Extension:			Python, REST Client
 
-## Testuser
-Username:   admin
-
-Password:   12345
 
 ## Requirements
 Intall needed Python libarys
@@ -47,18 +55,20 @@ Flask==1.1.2
 Flask-Login==0.5.0
 Flask-SQLAlchemy==2.4.4
 Jinja2==2.10.1
+jsonpatch==1.22
+jsonpointer==2.0
+jsonschema==3.2.0
+requests==2.22.0
 SQLAlchemy==1.3.19
+ufw==0.36
+uuid==1.30
+wadllib==1.3.3
 Werkzeug==1.0.1
 ```
 
 ## DB
 
-Master PW:  3qEL8D$ZIn&m
 
-DB-Name:    db-air-sol
-
-Username: as-user
-PW:       pH54eESyuQWt
 
 ### Generate DB
 
@@ -68,7 +78,7 @@ db.create_all()
 db.session.commit()
 ```
 
-### Add User
+### Add first User
 
 ```python
 from app import db
@@ -110,13 +120,13 @@ print(sendata[0].co2)
 
 ## DB Install
 
-Installiere DB Server + Hilfsprogramme
+Install DB Server
 ``` bash
 sudo apt install postgresql postgresql-contrib
 
 ```
 
-Wechsel zum PG User und Öffne das Management Programm
+Change to PG User and open the management programm
 ``` bash
 sudo -i -u postgres
 
@@ -125,17 +135,17 @@ psql
 ```
 
 
-Beenden des Management Programmes
+Close the Management Programmes
 ```bash
 \q
 ```
 
-User erstellen
+Create User 
 ```bash
 createuser --interactive
 ```
 
-DB erstellen
+Create DB 
 ```bash
 createdb DBNAME
 ```
