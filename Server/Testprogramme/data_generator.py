@@ -10,12 +10,14 @@ headers = {
     }
 
 
-data = '{"sensor_id": "TEKO_LU_5.5","sensor_secret": "PW12345w!", "data": [ {"co2": 401,"temp": 26.937,"hum": 40,"timestamp": "27.06.2020 00:00:03"}]}'
+data = '{"sensor_id": "PARU_HOME","sensor_secret": "PW12345w!", "data": [ {"co2": 401,"temp": 26.937,"hum": 40,"timestamp": "27.06.2020 00:00:03"}]}'
 
 data = json.loads(data)
 
-for m in range(13):
+for m in range(1):
     
+    m = 3
+
     if(m !=0):
         if(m<10):
             month = "0" + str(m)
@@ -23,7 +25,7 @@ for m in range(13):
             month = str(m)
 
 
-        for i in range(32):
+        for i in range(19):
 
             if(i !=0):
                 if(i<10):
@@ -39,10 +41,10 @@ for m in range(13):
                         hour = str(x)
 
 
-                    data["data"][0]["co2"] = random.randrange(400,1000)
-                    data["data"][0]["temp"] = random.randrange(5,40)
-                    data["data"][0]["hum"] = random.randrange(5,100)
-                    data["data"][0]["timestamp"] = day + "." + month + ".2020 " + hour + ":00:00"
+                    data["data"][0]["co2"] = random.randrange(400,490)
+                    data["data"][0]["temp"] = random.randrange(20,24)
+                    data["data"][0]["hum"] = random.randrange(30,40)
+                    data["data"][0]["timestamp"] = day + "." + month + ".2021 " + hour + ":00:00"
                     
 
                     

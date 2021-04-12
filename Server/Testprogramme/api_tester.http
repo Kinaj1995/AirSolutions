@@ -26,12 +26,12 @@ content-type: application/json
       "co2": 426,
       "temp": 25,
       "hum": 40,
-      "timestamp": "13.01.2021 23:00:00"
+      "timestamp": "19.02.2021 23:00:00"
     },
     {
       "co2": 4430,
       "temp": 25,
       "hum": 41,
-      "timestamp": "13.01.2021 23:01:00"
+      "timestamp": "19.02.2021 23:01:00"
     }]
 }

@@ -112,7 +112,7 @@ void sendData()
 
       HTTPClient http;
 
-      http.begin("http://192.168.0.55:5000/sensors/api/savedata");
+      http.begin("https://as.puchtuning.synology.me/sensors/api/savedata");
       http.addHeader("content-type", "application/json");
       int httpResponseCode = http.POST(json);
 
