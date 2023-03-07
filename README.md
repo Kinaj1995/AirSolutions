@@ -3,6 +3,7 @@
 Author: Janik Schilter, Pascal Rusca
 Changed at: 28.02.2021
 
+the full documentation can be found in the folder "/docs"
 
 
 
